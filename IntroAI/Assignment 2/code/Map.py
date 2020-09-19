@@ -228,4 +228,3 @@ class Map_Obj():
                         pixels[x * scale + i, y * scale + j] = colors[map[y][x]]
         # Show image
         image.show()
-
