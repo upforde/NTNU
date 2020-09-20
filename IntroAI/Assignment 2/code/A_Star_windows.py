@@ -8,15 +8,24 @@ task5 = False
 #                           INITIALIZATION OF THE MAP
 #-----------------------------------------------------------------------------------
 
-# Input validation in case the argument that was passed in command line is invalid
-try:
-    # Initializing the correct map based on the argument passed in command line
-    map = Map_Obj(int(sys.argv[1]))
-    if int(sys.argv[1]) == 5: task5 = True
-# If the argument is invalid, the default map is loaded
-except:
-    print("The argument passed in is invalid. Loading the default map.")
-    map = Map_Obj()
+# If you run windows, uncomment the line which represents the task you want to run
+# For Task 5, uncomment both lines under the '# Task 5' comment
+
+# Task 1
+map = Map_Obj(1)
+
+# Task 2
+#map = Map_Obj(2)
+
+# Task 3
+#map = Map_Obj(3)
+
+# Task 4
+#map = Map_Obj(4)
+
+# Task 5
+#map = Map_Obj(5)
+#task5 = True
 
 #-----------------------------------------------------------------------------------
 #                   IMPLEMENTATION OF A* AND OTHER FUNCTIONS
