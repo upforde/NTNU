@@ -112,7 +112,6 @@ class Map_Obj():
         for column in map_to_print:
             print(column)
 
-
     def pick_move(self):
         """
         A function used for moving the goal position. It moves the current goal position towards the end_goal position.
@@ -149,7 +148,6 @@ class Map_Obj():
         self.str_map[pos[0]][pos[1]] = str_value
         self.str_map[goal_pos[0], goal_pos[1]] = ' G '
 
-
     def tick(self):
         """
         Moves the current goal position every 4th call if current goal position is not already at the end_goal position.
@@ -171,7 +169,6 @@ class Map_Obj():
         self.tick_counter +=1
 
         return self.goal_pos
-
 
     def set_start_pos_str_marker(self, start_pos, map):
         # Attempt to set the start position on the map
