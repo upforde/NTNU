@@ -4,46 +4,51 @@ import
 define
     \insert List.oz
 
-    % Procedure to print the list as shown in the assignment paper
-    proc {PrintList List}
-        % Starts by printing the open parenthesies
-        {System.printInfo "("}
-        % Then loops through all elements of the list
-        for X in List do
-            % Opens the bracket and prints the element as an atom
-            {System.printInfo "["#{Char.toAtom X}}
-            % Checks if it's the last element in the list
-            if {Position List X} == {Length List}-1 then
-                % If so, just closes the bracket
-                {System.printInfo "]"}
-            else
-                % Otherwise adds a whitespace at the end of the bracket
-                {System.printInfo "] "}
-            end
-        end
-        % Closes the parenthesies
-        {System.printInfo ")"}
-        % Prints a newline
-        {System.showInfo ""}
-    end
-
-    % Function for retrieving leximes from a string of whitespace-separated leximes
-    fun {Lex String}
-        % If the function has gone through the entire string
-        if String.2 == nil then
-            % Return the string
-            String
+    % Function for retrieving leximes from a Input of whitespace-separated leximes
+    fun {Lex Input}
+        % If the function has gone through the entire Input
+        if Input.2 == nil then
+            % Return the Input
+            Input
         % If the current character is a space
-        elseif String.1 == 32 then
+        elseif Input.1 == &  then
             % Omit the space
-            {Lex String.2}
+            {Lex Input.2}
         else 
             % If none of the above
             % keep the first character and continue down the tail
-            String.1 | {Lex String.2}
+            Input.1 | {Lex Input.2}
         end
     end
 
-    {PrintList {Lex "1 2 + 3 *"}}
-    
+    fun {Tokenize Leximes}
+        if Leximes == nil then
+            Leximes
+        elseif Leximes.1 == &+ then
+            operator(type:pluss) | {Tokenize Leximes.2}
+        elseif Leximes.1 == &- then
+            operator(type:minus) | {Tokenize Leximes.2}
+        elseif Leximes.1 == &* then
+            operator(type:multiply) | {Tokenize Leximes.2}
+        elseif Leximes.1 == &/ then
+            operator(type:divide) | {Tokenize Leximes.2}
+        else 
+            number({Char.toInt Leximes.1}) | {Tokenize Leximes.2}
+        end
+    end
+/*
+    fun {Interpret Tokens}
+
+    end
+ */
+    T = num(5)
+    B = num(2)
+
+    C = {IntToFloat T.1} / {IntToFloat B.1}
+
+    {System.showInfo C}
+
+    X = {Tokenize {Lex "1 2 + 3 *"}}
+    {System.showInfo X}
+
 end
