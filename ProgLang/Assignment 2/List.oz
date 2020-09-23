@@ -31,6 +31,8 @@ fun {Drop List Count}
         % Is the count equal or greater to the length of the list?
         % just return nothing
         nil
+    elseif Count == 0 then
+        List
     elseif Count == 1 then
         % If only the first entry is to be dropped
         % then just return the tail
@@ -43,7 +45,9 @@ fun {Drop List Count}
 end
 
 fun {Append List1 List2}
-    if List1.2 == nil then
+    if List1 == nil then
+        List2
+    elseif List1.2 == nil then
         % Are the next entries in List1 non-existent?
         % append the first entry of List1 to the start of List2
         List1.1 | List2
@@ -69,12 +73,26 @@ fun {Member List Element}
 end
 
 fun {Position List Element}
-    if List.1 == Element then
-        % If the element I'm looking at is the one I'm looking for
-        % then stop incrementing
-        0
+    if {Member List Element} then
+        if List.1 == Element then
+            % If the element I'm looking at is the one I'm looking for
+            % then stop incrementing
+            0
+        else 
+            % If not, then increment and check the tail
+            1 + {Position List.2 Element}
+        end
     else 
-        % If not, then increment and check the tail
-        1 + {Position List.2 Element}
+        {Length List}
+    end
+end
+
+fun {Last List}
+    if List == nil then
+        nil
+    elseif List.2 == nil then
+        List.1
+    else 
+        {Last List.2}
     end
 end
