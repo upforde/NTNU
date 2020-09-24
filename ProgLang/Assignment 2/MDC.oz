@@ -240,32 +240,38 @@ define
     {System.showInfo "-------------Task 1-------------"}
 
     {System.showInfo "I've done the first assignment, so the List functions mentioned have allready been implemented.\n"#
-    "Some new functions have been added to the List.oz file, and some old functions have been edited slightly.\n"#
-    "This was done because they were specifically made as list functions. The new functions are explained with\n"# 
-    "comments and such, just like the old ones are."}
+    "Some new functions have been added to the List.oz file, and some old functions have been edited \n"#
+    "slightly. This was done because they were specifically made as list functions. The new functions\n"# 
+    "are explained with comments and such, just like the old ones are."}
 
     {System.showInfo "-------------Task 2-------------"}
 
     {System.printInfo "Task 2 a): "}
     {System.show {Lex "1 2 + 3 *"}}
     
+    {System.showInfo " "}
     {System.printInfo "Task 2 b): "}
     {System.show {Tokenize {Lex "1 2 + 3 *"}}}
 
+    {System.showInfo " "}
     {System.printInfo "Task 2 c): "}
     {System.show {Interpret {Tokenize {Lex "1 2 3 +"}}}}
 
+    {System.showInfo " "}
     {System.printInfo "Task 2 d): The function prints; "}
     D = {Interpret {Tokenize {Lex "1 2 3 p +"}}}
     {System.printInfo "The function returns; "}
     {System.show D}
 
+    {System.showInfo " "}
     {System.printInfo "Task 2 e): "}
     {System.show {Interpret {Tokenize {Lex "1 2 3 + d"}}}}
 
+    {System.showInfo " "}
     {System.printInfo "Task 2 f): "}
     {System.show {Interpret {Tokenize {Lex "1 2 3 + i"}}}}
 
+    {System.showInfo " "}
     {System.printInfo "Task 2 g): "}
     {System.show {Interpret {Tokenize {Lex "1 2 3 + ^"}}}}
 
@@ -275,21 +281,46 @@ define
     {System.printInfo "Task 3 b): "}
     {System.showInfo {Infix {Tokenize {Lex "3.0 9.0 10.0 * - 0.3 +"}}}}
 
-/* 
     {System.showInfo ""}
     {System.showInfo "-------------Task 4-------------"}
 
-    {System.printInfo "Task 4 a): "}
-    {System.show ""}
+    {System.showInfo "Task 4 a):"}
+    {System.showInfo "<operator> ::= + | - | * | /\n"#
+    "<command>  ::= p | d | i | ^\n"#
+    "<number>   ::= [0...9]*\n             | [0...9]*.[0...9]*"}
 
-    {System.printInfo "Task 4 b): "}
-    {System.show ""}
+    {System.showInfo " "}
+    {System.showInfo "Task 4 b):"}
+    {System.showInfo "<expression> ::= (<number><operator><number>)\n"#
+    "               | (<expression><operator><number>)\n"#
+    "               | (<number><operator><expression>)\n"#
+    "               | (<expression><operator><expression>)"}
+    {System.showInfo "The way I set up this grammar is inambiguous, because the operator and operands are being wrapped\n"#
+    "inside of parenthesies, making the precedence of each operator obsolete. I don't allow for <number> to be a valid\n"#
+    "expression, as this can make '1' a valid expression, which I don't want."}
     
+    {System.showInfo " "}
     {System.printInfo "Task 4 c): "}
-    {System.show ""}
+    {System.showInfo "A context-free grammar is a grammar with rules that allow for any non-terminal symbol to produce\n"#
+    "strings of terminal and/or non-terminal symbols.\n"#
+    "V --> w where 'V' is any non-terminal symbol in the grammar alphabet and 'w' is some string of terminal and/or\n"#
+    "non-terminal symbols.\n\n"#
+    "A context-sensitive grammar is a grammar with rules that allow for a non-terminal symbol to produce some string\n"#
+    "of terminal and/or non-terminal symbols only if some specific terminal and/or non-terminal symbol or a specific\n"#
+    "string of terminal and/or non-terminal symbols is present. In other words, a non-terminal symbol has to be surounded\n"#
+    "by some context of terminal and/or non-terminal symbols in order to produse some string of terminal and/or non-terminal\n"#
+    "symbols.\n"#
+    "xV --> w where 'V' is any non-terminal symbol in the grammar alphabet, 'w' is some string of terminal and/or\n"#
+    "non-terminal symbols and 'x' is some string of terminal and/or non-terminal symbols that has to be present so\n"#
+    "that the production rule can be enacted."}
     
+    {System.showInfo " "}
     {System.printInfo "Task 4 d): "}
-    {System.show ""}
-*/
+    {System.showInfo "This happens because values of type integer and values of type float have different operations associated\n"#
+    "with them. One simple example is division of integers vs division of floats. When integers are divided, the answer is rounded\n"#
+    "down (3/2=1) while when floats are divided, the answer is stored with some number of decimals (3.0/2.0=1.5). While I haven't \n"#
+    "done anything like this in the tasks, this error can be used for pattern matching purposes. An example of this in this task could\n"#
+    "be finding out which operator is being used by trying to execute an operation with an operator and catching the error. If there was\n"#
+    "a type mismatch, then we know that a division has occured, and we can handle that accordingly."}
 
 end
