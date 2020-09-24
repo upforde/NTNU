@@ -73,7 +73,9 @@ fun {Member List Element}
 end
 
 fun {Position List Element}
+    % Check to see if the element is even in the list
     if {Member List Element} then
+        % If it is, then the search for the element begins
         if List.1 == Element then
             % If the element I'm looking at is the one I'm looking for
             % then stop incrementing
@@ -83,15 +85,25 @@ fun {Position List Element}
             1 + {Position List.2 Element}
         end
     else 
+        % If the element is not a member of the list, then some value is
+        % returned to indicate this. I chose the length of the list, because
+        % this function returns positions starting from zero, meaning that
+        % the polsition of the last element in the list will be one less 
+        % than the length of the list.
         {Length List}
     end
 end
 
 fun {Last List}
+    % If the list is empty, then return nil
     if List == nil then
         nil
+    % If the tail is empty, then return the first element, as 
+    % it is the last element
     elseif List.2 == nil then
         List.1
+    % If not, call the function recursively, and give the tail 
+    % as the new list.
     else 
         {Last List.2}
     end

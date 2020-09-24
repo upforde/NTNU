@@ -188,6 +188,15 @@ define
         end
     end
 
+    {System.showInfo "-------------Task 1-------------"}
+
+    {System.showInfo "I've done the first assignment, so the List functions mentioned have allready been implemented.\n"#
+    "Some new functions have been added to the List.oz file, and some old functions have been edited slightly.\n"#
+    "This was done because they were specifically made as list functions. The new functions are explained with\n"# 
+    "comments and such, just like the old ones are."}
+
+    {System.showInfo "-------------Task 2-------------"}
+
     {System.printInfo "Task 2 a): "}
     {System.show {Lex "1 2 + 3 *"}}
     
@@ -211,4 +220,25 @@ define
     {System.printInfo "Task 2 g): "}
     {System.show {Interpret {Tokenize {Lex "1 2 3 + ^"}}}}
 
+    {System.showInfo ""}
+    {System.showInfo "-------------Task 3-------------"}
+
+    {System.printInfo "Task 3 b): "}
+    {System.show ""}
+/* 
+    {System.showInfo ""}
+    {System.showInfo "-------------Task 4-------------"}
+
+    {System.printInfo "Task 4 a): "}
+    {System.show ""}
+
+    {System.printInfo "Task 4 b): "}
+    {System.show ""}
+    
+    {System.printInfo "Task 4 c): "}
+    {System.show ""}
+    
+    {System.printInfo "Task 4 d): "}
+    {System.show ""}
+*/
 end
