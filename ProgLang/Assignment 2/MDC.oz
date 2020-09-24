@@ -200,39 +200,81 @@ define
         end
     end
 
+    % Function that translates the expression from Reverse-Polish-Notation to Infix notation.
     fun {InfixInternal Tokens ExpressionStack}
+        % Checks if all tokens have been checked
         if Tokens == nil then
+            % Returns the expression stack
             ExpressionStack
+        % If not all tokens have been checked
         else
+            % If the token is a number
             case Tokens.1 of number(N) then
+                % Appends the token to the expression stack and calls the function recursively
+                % with the tail of the tokens as Tokens and the new expression stack as ExpressionStack
                 {InfixInternal Tokens.2 {Append ExpressionStack number(N)|nil}}
+            % If the token is the pluss operator
             [] operator(type:pluss) then
+                % Create a local variable which houses the top two entries in the ExpressionStack
                 local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                % Concatinates the top two entries in the Expression stack into a new entrie that
+                % is in the Infix notation
                 NewString = "( "#NewExpressionStack.2.1.1#" + "#NewExpressionStack.1.1#" ) " in
+                    % Removes the top two entries from the ExpressionStack and appends the new Infix notation as a new
+                    % record called 'infix(string)'. The record is there to avoid any problems in the recursive hadling 
+                    % of the data, since all other entries in the stack are records of type (most likely) numbers 
                     {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
                 end
             [] operator(type:minus) then
+                % Create a local variable which houses the top two entries in the ExpressionStack
                 local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                % Concatinates the top two entries in the Expression stack into a new entrie that
+                % is in the Infix notation
                 NewString = "( "#NewExpressionStack.2.1.1#" - "#NewExpressionStack.1.1#" ) " in
+                    % Removes the top two entries from the ExpressionStack and appends the new Infix notation as a new
+                    % record called 'infix(string)'. The record is there to avoid any problems in the recursive hadling 
+                    % of the data, since all other entries in the stack are records of type (most likely) numbers 
                     {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
                 end
             [] operator(type:multiply) then
+                % Create a local variable which houses the top two entries in the ExpressionStack
                 local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                % Concatinates the top two entries in the Expression stack into a new entrie that
+                % is in the Infix notation
                 NewString = "( "#NewExpressionStack.2.1.1#" * "#NewExpressionStack.1.1#" ) " in
+                    % Removes the top two entries from the ExpressionStack and appends the new Infix notation as a new
+                    % record called 'infix(string)'. The record is there to avoid any problems in the recursive hadling 
+                    % of the data, since all other entries in the stack are records of type (most likely) numbers 
                     {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
                 end
             [] operator(type:divide) then
+                % Create a local variable which houses the top two entries in the ExpressionStack
                 local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                % Concatinates the top two entries in the Expression stack into a new entrie that
+                % is in the Infix notation
                 NewString = "( "#NewExpressionStack.2.1.1#" / "#NewExpressionStack.1.1#" ) " in
+                    % Removes the top two entries from the ExpressionStack and appends the new Infix notation as a new
+                    % record called 'infix(string)'. The record is there to avoid any problems in the recursive hadling 
+                    % of the data, since all other entries in the stack are records of type (most likely) numbers 
                     {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
                 end
+            % If the token did not match any cases above, then it's either a command, or some other invalid token
+            % and just gets disregarded. The function is called recursively with the tail of Tokens as Tokens and the
+            % current ExpressionStack as ExpressionStack
             else
                 {InfixInternal Tokens.2 ExpressionStack}
             end
         end
     end
 
+    % Function that calls the InfixInternal function
     fun {Infix Tokens}
+        % The function returns only the virtual string that gets generated by the InfixInternal function
+        % The InfixInternal function actually returns a list of entries in the expression stack. If the 
+        % Reverse-Polish-Notation leximes were of a valid format, then the first entry in the stack will
+        % be a record of type infix(string) with its value being the string which is the translated Infix
+        % notation of the leximes. Some error handling can be implemented here, but the task didn't ask for
+        % any, which is why none has been implemented.
         {InfixInternal Tokens nil}.1.1
     end
     
