@@ -4,7 +4,12 @@ import
 define
     \insert List.oz
 
-    % Function for retrieving leximes from a Input of whitespace-separated leximes
+    % This function is commented out, because it could only handle intigers from 0-9
+    % but not 10 and not floats. I therefore switched to the String.tokens function below.
+    % The rest of the code had to be slightly modified aswell to work with the new
+    % String method instead of my own function.
+
+    /* % Function for retrieving leximes from a Input of whitespace-separated leximes
     fun {Lex Input}
         % If the function has gone through the entire Input
         if Input.2 == nil then
@@ -19,6 +24,13 @@ define
             % keep the first character and continue down the tail
             Input.1 | {Lex Input.2}
         end
+    end*/
+
+    % Function for retrieving leximes from a Input of whitespace-separated leximes
+    fun {Lex Input}
+        % Uses the String.tokens method to retrieve a set of strings, where each
+        % member is the string inbetween the whitespaces in the original Input string
+        {String.tokens Input & }
     end
 
     % Function for tokenizing the leximes
@@ -29,41 +41,41 @@ define
             % have been replaced by records. Return the list
             Leximes
         % If the lexime is the "+" character
-        elseif Leximes.1 == &+ then
+        elseif Leximes.1.1 == &+ then
             % then the lexime gets replaced with the operator record of type pluss
             operator(type:pluss) | {Tokenize Leximes.2}
         % If the lexime is the "-" character
-        elseif Leximes.1 == &- then
+        elseif Leximes.1.1 == &- then
             % then the lexime gets replaced with the operator record of type minus
             operator(type:minus) | {Tokenize Leximes.2}
         % If the lexime is the "*" character
-        elseif Leximes.1 == &* then
+        elseif Leximes.1.1 == &* then
             % then the lexime gets replaced with the operator record of type multiply
             operator(type:multiply) | {Tokenize Leximes.2}
         % If the lexime is the "/" character
-        elseif Leximes.1 == &/ then
+        elseif Leximes.1.1 == &/ then
             % then the lexime gets replaced with the operator record of type divide
             operator(type:divide) | {Tokenize Leximes.2}
         % If the lexime is the "p" character
-        elseif Leximes.1 == &p then
+        elseif Leximes.1.1 == &p then
             % then the lexime gets replaced with the command record for print
             command(print) | {Tokenize Leximes.2}
         % If the lexime is the "d" character
-        elseif Leximes.1 == &d then
+        elseif Leximes.1.1 == &d then
             % then the lexime gets replaced with the command record for duplicate
             command(duplicate) | {Tokenize Leximes.2}
         % If the lexime is the "i" character
-        elseif Leximes.1 == &i then
+        elseif Leximes.1.1 == &i then
             % then the lexime gets replaced with the command record for invert
             command(invert) | {Tokenize Leximes.2}
         % if the lexime is the "^" character
-        elseif Leximes.1 == &^ then
+        elseif Leximes.1.1 == &^ then
             % then the lexime gets replaced with the command record for inverse
             command(inverse) | {Tokenize Leximes.2}
         % If none of the above, then it's probably an int
         else 
             % the lexime gets replaced with the number record and the lexime value is turned into an int
-            number({StringToInt{AtomToString{Char.toAtom Leximes.1}}}) | {Tokenize Leximes.2}
+            number({StringToFloat Leximes.1}) | {Tokenize Leximes.2}
         end
     end
 
@@ -139,7 +151,7 @@ define
                 elseif {Smallest} == DivPos then
                     % Make local variables that get the two predescessors to the operator and divide them by one another
                     local Operands = {Drop {Take Tokens DivPos} DivPos-2}
-                    Quotient = {IntToFloat Operands.2.1.1} / {IntToFloat Operands.1.1} in
+                    Quotient = Operands.2.1.1 / Operands.1.1 in
                         % After dividing the values, the two predescessors to the operator together with the operator
                         % get replaced by the new record of the quotient, and the function gets recursively called to 
                         % check for other operators or commands
@@ -176,7 +188,7 @@ define
                         % The Inverse command, together with the top element in the stack, is replaced by the
                         % inverse of the top element in the stack and the function gets called recursively to 
                         % check for other operators or commands
-                        {Interpret {Append {Append {Take Stack InversePos-1} number({IntToFloat 1} / {IntToFloat {Last Stack}.1})|nil} {Drop Tokens InversePos+1}}}
+                        {Interpret {Append {Append {Take Stack InversePos-1} number({IntToFloat 1} / {Last Stack}.1)|nil} {Drop Tokens InversePos+1}}}
                     end
                 % This else Tokens is here because I want to show which operator or command each if or elseif belongs to
                 else 
@@ -187,6 +199,43 @@ define
             end
         end
     end
+
+    fun {InfixInternal Tokens ExpressionStack}
+        if Tokens == nil then
+            ExpressionStack
+        else
+            case Tokens.1 of number(N) then
+                {InfixInternal Tokens.2 {Append ExpressionStack number(N)|nil}}
+            [] operator(type:pluss) then
+                local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                NewString = "( "#NewExpressionStack.2.1.1#" + "#NewExpressionStack.1.1#" ) " in
+                    {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
+                end
+            [] operator(type:minus) then
+                local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                NewString = "( "#NewExpressionStack.2.1.1#" - "#NewExpressionStack.1.1#" ) " in
+                    {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
+                end
+            [] operator(type:multiply) then
+                local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                NewString = "( "#NewExpressionStack.2.1.1#" * "#NewExpressionStack.1.1#" ) " in
+                    {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
+                end
+            [] operator(type:divide) then
+                local NewExpressionStack = {Drop ExpressionStack {Length ExpressionStack}-2} 
+                NewString = "( "#NewExpressionStack.2.1.1#" / "#NewExpressionStack.1.1#" ) " in
+                    {InfixInternal Tokens.2 {Append {Take ExpressionStack {Length ExpressionStack}-2} infix(NewString)|nil}}
+                end
+            else
+                {InfixInternal Tokens.2 ExpressionStack}
+            end
+        end
+    end
+
+    fun {Infix Tokens}
+        {InfixInternal Tokens nil}.1.1
+    end
+    
 
     {System.showInfo "-------------Task 1-------------"}
 
@@ -224,7 +273,8 @@ define
     {System.showInfo "-------------Task 3-------------"}
 
     {System.printInfo "Task 3 b): "}
-    {System.show ""}
+    {System.showInfo {Infix {Tokenize {Lex "3.0 9.0 10.0 * - 0.3 +"}}}}
+
 /* 
     {System.showInfo ""}
     {System.showInfo "-------------Task 4-------------"}
@@ -241,4 +291,5 @@ define
     {System.printInfo "Task 4 d): "}
     {System.show ""}
 */
+
 end
