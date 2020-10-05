@@ -64,12 +64,9 @@ define
     "\n\tfunction that sends its current state along with the parameters when "#
     "\n\tit's called, making it the last thing that the function does."}
     {System.showInfo "\tMy implementation of the tail recursive sum function outputs "#{SumTail [1 2 3 4 5] 0}}
-
-
     {System.showInfo "b)\tBy implementing tail recursion, the function doesn't have to collapse on"#
     "\n\titself to calculate the return value. Oz is designed to use this advantage"#
     "\n\tfor optimization purposes."}
-
     {System.showInfo "c)\tNot all languages would benefit from tail recursion, as not all languages"#
     "\n\tprovide optimization for it. Since Oz does, then the preformance gain is"#
     "\n\tnoteworthy, but other strict functional languages evaluate all their "#
