@@ -113,31 +113,27 @@ end
 
 %------------------------Task 5---------------------------
 
-% I interpreted this task as incrementing a value indefinately, 
-% which reminded me of the counter object showed in CTMCP on 
-% page 18. I implemented and refactored the counter to suit 
-% this task 
-fun {LazyNumberGenerator StartValue} Bump Read C in
-    % The cell that holds the count integer
-    C = {NewCell StartValue}
-    
-    % Function to increment the counter
-    fun {Bump}
-        C:=@C+1
-        % Returns a tuple holding the value of the Read function and
-        % the callable for the Bump function
-        lazyNum({Read} Bump)
-    end
+fun {LazyNumberGenerator StartValue} LazyNextNumber in
+    % Create a function that calls the LazyNumberGenerator 
+    % with an incremented value of startValue
+    fun {LazyNextNumber} {LazyNumberGenerator StartValue + 1} end
 
-    % Function to read the cell value
-    fun {Read}
-        % Returns the value held at the cell C
-        @C
-    end
-
-    % Returns a tuple holding the value of the Read function and
-    % the callable for the Bump function
-    lazyNum({Read} Bump)
+    % Return a list with the start value as the first element
+    % and the funtion to create a new list as the second element
+    StartValue | LazyNextNumber
 end
 
 %------------------------Task 6---------------------------
+
+fun {SumTail List Sum}
+    % If the list is nil, then return the sum
+    if List == nil then
+        Sum
+    % If not, call the function recursively and 
+    % sum up the sum and the head of the list. Send
+    % the tail of the list as the new list
+    else
+        {SumTail List.2 Sum + List.1}
+    end
+end
+
