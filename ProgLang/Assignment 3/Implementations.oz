@@ -99,11 +99,45 @@ end
 
 %------------------------Task 4---------------------------
 
-fun {Quadratic A B C} RealSol X1 X2 in
-    {QuadraticEquation A B C RealSol X1 X2}
-    quadratic(x1:X1 x2:X2 realSol:RealSol)
+fun {Quadratic A B C} Solve in
+    % Function solve takes in an X value
+    fun {Solve X}
+        % Returns a solution for the quadratic equation
+        % using the X value provided
+        A*X*X + B*X + C
+    end
+
+    % The Quadratic function returns the solve function itself
+    Solve
 end
 
 %------------------------Task 5---------------------------
+
+% I interpreted this task as incrementing a value indefinately, 
+% which reminded me of the counter object showed in CTMCP on 
+% page 18. I implemented and refactored the counter to suit 
+% this task 
+fun {LazyNumberGenerator StartValue} Bump Read C in
+    % The cell that holds the count integer
+    C = {NewCell StartValue}
+    
+    % Function to increment the counter
+    fun {Bump}
+        C:=@C+1
+        % Returns a tuple holding the value of the Read function and
+        % the callable for the Bump function
+        lazyNum({Read} Bump)
+    end
+
+    % Function to read the cell value
+    fun {Read}
+        % Returns the value held at the cell C
+        @C
+    end
+
+    % Returns a tuple holding the value of the Read function and
+    % the callable for the Bump function
+    lazyNum({Read} Bump)
+end
 
 %------------------------Task 6---------------------------
