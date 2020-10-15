@@ -159,7 +159,6 @@ def create_map_coloring_csp():
             csp.add_constraint_one_way(other_state, state, lambda i, j: i != j)
     return csp
 
-
 def create_sudoku_csp(filename):
     """Instantiate a CSP representing the Sudoku board found in the text
     file named 'filename' in the current directory.
@@ -187,7 +186,6 @@ def create_sudoku_csp(filename):
             csp.add_all_different_constraint(cells)
 
     return csp
-
 
 def print_sudoku_solution(solution):
     """Convert the representation of a Sudoku solution as returned from
