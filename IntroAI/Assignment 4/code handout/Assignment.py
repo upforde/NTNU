@@ -14,6 +14,10 @@ class CSP:
         # the variable pair (i, j)
         self.constraints = {}
 
+        # I added these numbers to serve as counters for the CSP
+        self.backtrack_n = 0
+        self.failure_n = 0
+
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
         and 'domain' is a list of the legal values for the variable.
@@ -107,9 +111,40 @@ class CSP:
         should have a clean slate and not see any traces of the old
         assignments and inferences that took place in previous
         iterations of the loop.
-        """
-        # TODO: IMPLEMENT THIS
-        pass
+        """ 
+        # The backtracking counter gets incremented for each time the backtracking
+        # function is ran
+        self.backtrack_n+=1
+
+        # If the length of the lists is more than one, then the sum of the
+        # lengths will be more than the amount of variables, meaning that 
+        # if it is equal to the amount of variables, then the function is finished
+        if sum(map(len, assignment.values())) == len(self.variables):
+            # When finished, return the solution
+            return assignment
+
+        # Select an unassigned variable by using the selection function
+        # This particular function uses MRV heuristics, because I felt
+        # like it would be the most efficient for solving sudoku
+        unassigned = self.select_unassigned_variable(assignment)
+        
+        # For each value from the variable domain
+        for value in assignment[unassigned]:
+            # create a copy of the domains for the purposes of
+            # backtracking
+            assignment_copy = copy.deepcopy(assignment)
+            # assign the variable inside of the domain to the value
+            assignment_copy[unassigned] = [value]
+            # if the value assigned is consistent
+            if self.inference(assignment_copy, self.get_all_neighboring_arcs(unassigned)):
+                # the backtracking function gets called recursivelly
+                result = self.backtrack(assignment_copy)
+                # If the result is not a failure, the result is returned
+                if result: return result
+        # The failure counter is incremented for each time the function fails
+        self.failure_n+=1
+        # The function returns False if it fails
+        return False
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
@@ -117,8 +152,22 @@ class CSP:
         in 'assignment' that have not yet been decided, i.e. whose list
         of legal values has a length greater than one.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+
+        # I'm basing this unassigned variable retrieval method on the
+        # minimum remaining values heuristic, because that is how humans
+        # solve sudoku. By filling in the places with least possible 
+        # answers first, the other places get even more constrained
+        least = None
+        # For each variable in the domains
+        for variable in assignment:
+            # if the variable has a a domain that is less than the previous smallest domain variable
+            # and allso the domain has a length of more than 1
+            if (least == None and len(assignment[variable]) > 1) or (len(assignment[variable]) > 1 and len(assignment[variable]) < len(assignment[least])):
+                # make variable to least
+                least = variable
+
+        # The function returns least
+        return least
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -126,8 +175,24 @@ class CSP:
         the lists of legal values for each undecided variable. 'queue'
         is the initial queue of arcs that should be visited.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+
+        # While the queue is not empty
+        while queue:
+            # pop the first element of queue
+            current_i, current_j = queue.pop(0)
+            # if the revise function returns true, meaning the assignment
+            # has been revised
+            if self.revise(assignment, current_i, current_j):
+                # if the domain of the current_i element in the queue is empty
+                # return False
+                if not assignment[current_i]: return False
+                # for each neighbouring arc
+                for arc in self.get_all_neighboring_arcs(current_i):
+                    # append the arc to the queue
+                    queue.append(arc)
+        
+        # Function returns True
+        return True
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -138,8 +203,35 @@ class CSP:
         between i and j, the value should be deleted from i's list of
         legal values in 'assignment'.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+
+        # Boolean variable that keeps track of wether
+        # the assignment has been revised or not
+        revised = False
+        # For each value in the domain of i
+        for x in assignment[i]:
+            # a boolean variable used to check
+            # wether the value is viable based on the
+            # constraints betwixt i and j
+            viable = False
+            # for each value in the domain of j
+            for y in assignment[j]:
+                # if (x, y) is allowed by the constraints
+                # betwixt i and j
+                if (x, y) in self.constraints[i][j]:
+                    # if (x, y) is viable, then the value x is viable,
+                    # meaning that the rest of the constraints don't need
+                    # to be checked. 
+                    viable = True
+                    break
+            # if the value x is not viable
+            if not viable:
+                # remove the value from the domain of i
+                assignment[i].remove(x)
+                # set revised to true
+                revised = True
+        
+        # The function returns revised
+        return revised
 
 
 def create_map_coloring_csp():
@@ -194,9 +286,42 @@ def print_sudoku_solution(solution):
     """
     for row in range(9):
         for col in range(9):
-            print(solution['%d-%d' % (row, col)][0]),
+            print(solution['%d-%d' % (row, col)][0], end=" ")
             if col == 2 or col == 5:
-                print('|'),
+                print('|', end=" ")
         print("")
         if row == 2 or row == 5:
             print('------+-------+------')
+
+easy = create_sudoku_csp('easy.txt')
+medium = create_sudoku_csp('medium.txt')
+hard = create_sudoku_csp('hard.txt')
+veryhard = create_sudoku_csp('veryhard.txt')
+
+print("Easy sudoku")
+print_sudoku_solution(easy.backtracking_search())
+print("Backtracking", end=": ")
+print(easy.backtrack_n)
+print("Failure", end=": ")
+print(easy.failure_n)
+print()
+print("Medium sudoku")
+print_sudoku_solution(medium.backtracking_search())
+print("Backtracking", end=": ")
+print(medium.backtrack_n)
+print("Failure", end=": ")
+print(medium.failure_n)
+print()
+print("Hard sudoku")
+print_sudoku_solution(hard.backtracking_search())
+print("Backtracking", end=": ")
+print(hard.backtrack_n)
+print("Failure", end=": ")
+print(hard.failure_n)
+print()
+print("very hard sudoku")
+print_sudoku_solution(veryhard.backtracking_search())
+print("Backtracking", end=": ")
+print(veryhard.backtrack_n)
+print("Failure", end=": ")
+print(veryhard.failure_n)
