@@ -107,8 +107,9 @@ define
     % hammers that are in the buffer instantly, meaning that the 6 items in
     % the buffer are instantly counted. Since the consumer needs 10 hammers, 
     % the remaining four are created and counted as normal, but the operation
-    % of counting the working hammers has effectively only taken the consumer
-    % 4 seconds, instead of the usual 10
+    % of counting all of the the working hammers has effectively only taken 
+    % the consumer 4 seconds, instead of the usual 10. Compounded with the 
+    % 6 second wait, the operation took the usual 10 seconds though.
 
     {System.showInfo "Without the buffer:"}
     local HammerTime Consumer in
