@@ -119,8 +119,8 @@ define
         {System.show Consumer}
     end
 
-    % Here we see that if the buffer is removed, but the delay is still present,
-    % the consumer only gets the hammers as they are produced, meaning that the
+    % Here we see that if the buffer is removed, but the delay is still present.
+    % The consumer only gets the hammers as they are produced, meaning that the
     % counting takes the usual 10 sekonds. That conpounded with the 6 second delay
     % makes this entire operation take 16 seconds.
 
