@@ -58,6 +58,13 @@ define
         thread Hams = {Product Streamed} end
         % {Browse Hams}
     end
+
+    % By making GemerateOdd lazy, the hammers are produced only as the
+    % consumer asks for them to be produced. This way, odd numbers are
+    % only generated when needed, meaning that the consumer never gets
+    % overwhelmed by the producer. The downside of this is that the 
+    % throughput is decreased, as the generation stops between each 
+    % element, meaning that the consumer has to wait for each element.
     
 %=========================== Task 5 ===========================
 % a)
@@ -81,35 +88,40 @@ define
     % are working
 
 % c)
-    proc {BoundedBuffer N ?Xs Ys}
-        fun {Startup N ?Xs}
-            if N==0 then
-                Xs
-            else Xr in
-                Xs = _|Xr
-                {Startup N-1 Xr}
-            end
-        end
-
-        proc {AskLoop Ys ?Xs ?End}
-            case Ys of Y|Yr then Xr End2 in
-                Xs = Y|Xr
-                End = _|End2
-                {AskLoop Yr Xr End2}
-            end
-        end
-
-        End = {Startup N Xs} in
-        {AskLoop Ys Xs End}
-    end
-
+    {System.showInfo "With the buffer:"}
     local HammerTime Consumer Buffer in
         HammerTime = {HammerFactory}
-        {BoundedBuffer 6 Buffer HammerTime}
+        Buffer = {BoundedBuffer HammerTime 6}
         {Delay 6000}
         Consumer = {HammerConsumer Buffer 10}
         {System.show Consumer}
     end
+
+    % When created, the bounded buffer creates a list of length N
+    % of elements from the stream. These elements are retrieved from
+    % the buffer by the consumer when needed. When the buffer is empty,
+    % it will retrieve new elements from the stream. The delay of 6 
+    % seconds is there to show that the buffer is first created and filled
+    % before the consumer gets their hands on the merch. When the consumer
+    % gets the buffer as a stream, they can then start counting the working
+    % hammers that are in the buffer instantly, meaning that the 6 items in
+    % the buffer are instantly counted. Since the consumer needs 10 hammers, 
+    % the remaining four are created and counted as normal, but the operation
+    % of counting the working hammers has effectively only taken the consumer
+    % 4 seconds, instead of the usual 10
+
+    {System.showInfo "Without the buffer:"}
+    local HammerTime Consumer in
+        HammerTime = {HammerFactory}
+        {Delay 6000}
+        Consumer = {HammerConsumer HammerTime 10}
+        {System.show Consumer}
+    end
+
+    % Here we see that if the buffer is removed, but the delay is still present,
+    % the consumer only gets the hammers as they are produced, meaning that the
+    % counting takes the usual 10 sekonds. That conpounded with the 6 second delay
+    % makes this entire operation take 16 seconds.
 
     {Application.exit 0}
 end

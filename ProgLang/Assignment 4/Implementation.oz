@@ -16,16 +16,18 @@ fun {GenerateOdd S E}
     else nil end
 end
 
+
 % Function for multiplying every number in a list together
 fun {Product S}
-    % If S is nil, then return multiplying factor of 1
-    if S == nil then 1
-    else
-        % Browse the head of S
-        % {Browse S.1}
-        % Multiply the head element with the recursive call
-        % of the Product function that now has the tail element as the list
-        S.1 * {Product S.2}
+    % If S has a head and tail
+    case S of H|T then
+        % return the product of the head with the 
+        % value of the Product function called recursively
+        H * {Product T}
+    % If the list is nil
+    [] nil then
+        % return the identity multiplicator
+        1
     end
 end
 
@@ -41,6 +43,7 @@ fun lazy {LazyGenerateOdd S E}
     else nil end
 end
 
+
 % The random int function taken straight out of the assignment
 % Since it's not my code, I won't comment it
 fun {RandomInt Min Max}
@@ -48,6 +51,7 @@ fun {RandomInt Min Max}
     {OS.randLimits ?MinOS ?MaxOS}
     Min + X*(Max - Min) div (MaxOS - MinOS)
 end
+
 
 % The lazy HammerFactory function returns a list of hammers
 % that are working 90 percent of the time
@@ -66,6 +70,7 @@ fun lazy {HammerFactory} Rnd = {RandomInt 0 100} in
         working | {HammerFactory}
     end
 end
+
 
 % The HammerConsumer function that returns the amount of working hammers in the stream
 fun {HammerConsumer HammerStream N} WorkingHammerCounter in
@@ -98,3 +103,23 @@ fun {HammerConsumer HammerStream N} WorkingHammerCounter in
 end
 
 
+% The function that returns a buffer of size N
+% The code is taken from page 291 in CTMCP
+fun {BoundedBuffer In N}
+    % The end variable is a list of future variables
+    % not generated yet by the lazy function
+    End = thread {List.drop In N} end
+    % The lazy loop returns a list of elements of size N,
+    % but can get more elements out of the stream if needed
+    fun lazy {Loop In End}
+        % checking if the In list is not empty
+        case In of I|In2 then
+            % returning a list of the head element and 
+            % and the value of the recursive function call
+            I|{Loop In2 thread End.2 end}
+        end
+    end
+    in 
+    % The Loop function is called, returning a buffer
+    {Loop In End}
+end
