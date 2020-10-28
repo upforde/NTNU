@@ -1,4 +1,5 @@
-[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:3:18: unclosed character literal (or use " for string literal "bruh")[0m
-[0m[[0m[31merror[0m] [0m[0m    println('bruh');[0m
-[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:36:42: value synchronised is not a member of object Main[0m
+[0m[[0m[31merror[0m] [0m[0mdid you mean synchronized?[0m
+[0m[[0m[31merror[0m] [0m[0m  def syncIncreaseCounter(): Unit = this.synchronised {counter += 1}[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
