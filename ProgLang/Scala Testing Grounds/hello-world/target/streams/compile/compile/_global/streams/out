@@ -1,5 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:9:21: not enough arguments for method fib_tail: (n: BigInt, a: BigInt, b: BigInt)BigInt.[0m
-[0m[[0m[31merror[0m] [0m[0mUnspecified value parameters a, b.[0m
-[0m[[0m[31merror[0m] [0m[0m    println(fib_tail(10000))[0m
-[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:3:18: unclosed character literal (or use " for string literal "bruh")[0m
+[0m[[0m[31merror[0m] [0m[0m    println('bruh');[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
