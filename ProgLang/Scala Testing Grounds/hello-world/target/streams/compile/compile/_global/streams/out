@@ -1,5 +1,5 @@
-[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:36:42: value synchronised is not a member of object Main[0m
-[0m[[0m[31merror[0m] [0m[0mdid you mean synchronized?[0m
-[0m[[0m[31merror[0m] [0m[0m  def syncIncreaseCounter(): Unit = this.synchronised {counter += 1}[0m
-[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:83:19: not enough arguments for method result: (awaitable: scala.concurrent.Awaitable[T], atMost: scala.concurrent.duration.Duration)T.[0m
+[0m[[0m[31merror[0m] [0m[0mUnspecified value parameter atMost.[0m
+[0m[[0m[31merror[0m] [0m[0m      Await.result(result)              // sequince, but the sequince cannot move on until A.start is [0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
