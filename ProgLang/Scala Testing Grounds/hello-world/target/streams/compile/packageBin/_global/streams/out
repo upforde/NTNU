@@ -1,17 +1,1 @@
-[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/hello-world_2.13-1.0.jar ...[0m
-[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
-[0m[[0m[0mdebug[0m] [0m[0m	[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2$B$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2$B$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2$Deadlock$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2$Deadlock$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2$A$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2$A$.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	task2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/classes/task2.class[0m
-[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
+[0m[[0m[0mdebug[0m] [0m[0mJar uptodate: /home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/target/scala-2.13/hello-world_2.13-1.0.jar[0m
