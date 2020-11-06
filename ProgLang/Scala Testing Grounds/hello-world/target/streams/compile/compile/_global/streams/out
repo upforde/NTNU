@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:13:10: not found: value lol[0m
-[0m[[0m[31merror[0m] [0m[0m    Left(lol+=t)[0m
-[0m[[0m[31merror[0m] [0m[0m         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/danilas/Documents/Schoolwork/NTNU/ProgLang/Scala Testing Grounds/hello-world/src/main/scala/Main.scala:12:36: not found: value Test[0m
+[0m[[0m[31merror[0m] [0m[0m    for (test <- list) {new Thread(Test).start()}[0m
+[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -5,14 +5,17 @@ import scala.concurrent.duration._
 object task2 {
   var lol = 10
   def main(args: Array[String]):Unit = {
-    
-    var answer = test(-10)
-    println(answer)
-    println(lol)
-  }
-  def test(t: Int): Either[Unit, String] = this.synchronized{
-    if (t < 0 || t > 10)
-      return Right("What the fuck")
-    Left(lol+=t)
+    var list: List[Test] = List(new Test(), new Test(), new Test(), new Test())
+    println(list)
+    for (test <- list) {new Thread(test).start()}
+  } 
+}
+
+class Test() extends Runnable{
+  override def run() = {
+    Thread.sleep(50)
+    println("Fuck1")
+    Thread.sleep(50)
+    println("Fuck2")
   }
 }
