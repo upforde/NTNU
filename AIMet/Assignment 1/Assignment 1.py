@@ -148,19 +148,24 @@ class BayesianNetwork:
 
     def sorted_nodes(self):
         """
-        TODO: Implement Kahn's algorithm (or some equivalent algorithm) for putting
-              variables in lexicographical topological order.
         Returns: List of sorted variable names.
         """
         L = [] # Empty list that will contain the sorted elements
         S = [v for v in self.variables if not self.variables[v].parents] # Set of all nodes with no incoming edge
 
+        # While the list S is not empty
         while S:
+            # Pop out the first element
             n = S.pop()
+            # For each child node of n (node with an incoming edge from n)
             for m in self.edges[self.variables[n]]:
+                # Remove the edge (delete n from the parents list)
                 m.parents.remove(n)
+                # If the parents list is empty of node m (no incoming edges)
                 if not m.parents:
+                    # Add it to S
                     S.append(m.name)
+            # Add the node n to L
             L.append(n)
         
         print(L)
