@@ -113,7 +113,6 @@ class Variable:
 
         return self.table[state, int(table_index)]
 
-
 class BayesianNetwork:
     """
     Class representing a Bayesian network.
@@ -150,29 +149,29 @@ class BayesianNetwork:
         """
         Returns: List of sorted variable names.
         """
+        def has_incoming_edges(var):
+            """
+            Returns: Boolean showingh wether the variable has any incoming edges or not
+            """
+            for node in self.edges: # For each node
+                if var in self.edges[node]: return True # Check if the value has an edge coming from the node
+            return False # If not, returns false
+
         L = [] # Empty list that will contain the sorted elements
         S = [v for v in self.variables if not self.variables[v].parents] # Set of all nodes with no incoming edge
+        Edges = self.edges.copy() # A copy of edges is created to make sure that the original dictionary is unaffected when running this method
 
-        # While the list S is not empty
-        while S:
-            # Pop out the first element
-            n = S.pop()
-            # For each child node of n (node with an incoming edge from n)
-            for m in self.edges[self.variables[n]]:
-                # Remove the edge (delete n from the parents list)
-                m.parents.remove(n)
-                # If the parents list is empty of node m (no incoming edges)
-                if not m.parents:
-                    # Add it to S
-                    S.append(m.name)
-            # Add the node n to L
-            L.append(n)
-        
-        print(L)
-                
-
+        while S: # While the list S is not empty
+            n = S.pop() # Pop out the first element
+            L.append(n) # Add the node n to L
             
+            copy = Edges[self.variables[n]].copy() # A copy of the edges is created to ensure proper traversal
 
+            for m in copy: # For all of the edges that go out from node n
+                Edges[self.variables[n]].remove(m) # Remove the edge
+                if not has_incoming_edges(m): S.append(m.name) # If the child has no incoming edges, append it to S
+            
+        return L # Return the list containing the sorted elements
 
 class InferenceByEnumeration:
     def __init__(self, bayesian_network):
@@ -271,11 +270,9 @@ def problem3c():
     print(f"Probability distribution, P({d3.name} | !{d4.name})")
     print(posterior)
 
-
 def monty_hall():
     # TODO: Implement the monty hall problem as described in Problem 4c)
     pass
-
 
 if __name__ == '__main__':
     test()
