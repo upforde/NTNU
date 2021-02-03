@@ -185,47 +185,43 @@ class InferenceByEnumeration:
         # it is actually passing a pointer to that variable. This means that if you want
         # to make sure that a function doesn't change the variable, you should pass a copy.
         # You can make a copy of a variable by calling variable.copy()
-        print("Hello world")
+        def normalize(L):
+            return L
+
+        Q = []
+        for x in X:
+            Q.append(self._enumerate_all(self.bayesian_network.variables[x], evidence))
+        return normalize(Q)
 
     def _enumerate_all(self, vars, evidence):
         # TODO: Implement Enumerate-All algortihm as described in Problem 4 b)
-        print("Hello world")
+        def sum_prob(Y):
+            """
+            Sums all probabilities of the state
+            """
+            sum = 0
+            for y in Y:
+                sum += Y.probability(y, evidence)
+            return sum
+
+        if not vars: return 1.0
+
+        vars_copy = vars.copy()
+        Y = vars_copy.pop()
+
+        for y in Y:
+            if y in evidence:
+                return Y.probability(y, evidence) * self._enumerate_all(vars_copy, evidence)
+            else: return sum_prob(Y) * self._enumerate_all(vars_copy, evidence)
 
     def query(self, var, evidence={}):
         """
         Wrapper around "_enumeration_ask" that returns a
         Tabular variable instead of a vector
         """
-        q = self._enumeration_ask(var, evidence).reshape(-1, 1)
+        q = self._enumeration_ask(var, evidence)
         return Variable(var, self.bayesian_network.variables[var].no_states, q)
 
-
-def test():
-    d1 = Variable('A', 2, [[0.8], [0.2]])
-    d2 = Variable('B', 2, [[0.5, 0.2],
-                           [0.5, 0.8]],
-                  parents=['A'],
-                  no_parent_states=[2])
-    d3 = Variable('C', 2, [[0.1, 0.3],
-                           [0.9, 0.7]],
-                  parents=['B'],
-                  no_parent_states=[2])
-    d4 = Variable('D', 2, [[0.6, 0.8],
-                           [0.4, 0.2]],
-                  parents=['B'],
-                  no_parent_states=[2])
-
-    bn = BayesianNetwork()
-
-    bn.add_variable(d1)
-    bn.add_variable(d2)
-    bn.add_variable(d3)
-    bn.add_variable(d4)
-    bn.add_edge(d1, d2)
-    bn.add_edge(d2, d3)
-    bn.add_edge(d2, d4)
-
-    print(bn.sorted_nodes())
 
 def problem3c():
     d1 = Variable('A', 2, [[0.8], [0.2]])
@@ -271,10 +267,28 @@ def problem3c():
     print(posterior)
 
 def monty_hall():
-    # TODO: Implement the monty hall problem as described in Problem 4c)
-    pass
+    prize = Variable('Prize', 3, [[1/3], [1/3], [1/3]])
+    chozen_by_guest = Variable('Chosen by guest', 3, [[1/3],[1/3],[1/3]])
+    chosen_by_host = Variable('Chosen by host', 3, 
+                                [[0, 0, 0, 0, 0.5, 1, 0, 1, 0.5], 
+                                [0.5, 0, 1, 0, 0, 0, 1, 0, 0.5],
+                                [0.5, 1, 0, 1, 0.5, 0, 0, 0, 0]],
+                            ['Prize', 'Chosen by guest'], [3, 3])
+    
+    bn = BayesianNetwork()
+
+    bn.add_variable(prize)
+    bn.add_variable(chozen_by_guest)
+    bn.add_variable(chosen_by_host)
+    bn.add_edge(prize, chosen_by_host)
+    bn.add_edge(chozen_by_guest, chosen_by_host)
+
+    inference = InferenceByEnumeration(bn)
+    posterior = inference.query('Prize', [{'Chosen by guest': 0}, {'Chosen by host': 2}])
+
+    print(f"Probability distribution, P({prize.name} | {chozen_by_guest.name}=1, {chosen_by_host.name}=3")
+    print(posterior)
 
 if __name__ == '__main__':
-    test()
-    # problem3c()
-    # monty_hall()
+    #problem3c()
+    monty_hall()
