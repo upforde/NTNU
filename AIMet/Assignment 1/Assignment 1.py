@@ -267,28 +267,35 @@ def problem3c():
     print(posterior)
 
 def monty_hall():
+    # The prize variable
     prize = Variable('Prize', 3, [[1/3], [1/3], [1/3]])
+    # The guest choice variable
     chozen_by_guest = Variable('Chosen by guest', 3, [[1/3],[1/3],[1/3]])
+    # The host choice variable
     chosen_by_host = Variable('Chosen by host', 3, 
                                 [[0, 0, 0, 0, 0.5, 1, 0, 1, 0.5], 
                                 [0.5, 0, 1, 0, 0, 0, 1, 0, 0.5],
                                 [0.5, 1, 0, 1, 0.5, 0, 0, 0, 0]],
                             ['Prize', 'Chosen by guest'], [3, 3])
     
+    # Create the bayesian network and add the variables
     bn = BayesianNetwork()
 
     bn.add_variable(prize)
     bn.add_variable(chozen_by_guest)
     bn.add_variable(chosen_by_host)
+    # Create the edges between the variables
     bn.add_edge(prize, chosen_by_host)
     bn.add_edge(chozen_by_guest, chosen_by_host)
 
+    # Run the algorithm that does not work
     inference = InferenceByEnumeration(bn)
     posterior = inference.query('Prize', [{'Chosen by guest': 0}, {'Chosen by host': 2}])
 
+    # Print out the results
     print(f"Probability distribution, P({prize.name} | {chozen_by_guest.name}=1, {chosen_by_host.name}=3")
     print(posterior)
 
 if __name__ == '__main__':
-    #problem3c()
+    problem3c()
     monty_hall()
