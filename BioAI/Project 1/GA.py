@@ -28,7 +28,7 @@ def parent_selection(measured_population, cheat=0.01):
     fitness_max = float('-inf')     # Instantiate the max of fitness across the population
     fitness_min = float('inf')      # Instantiate the min of fitness acroos the population
 
-    # This bit finds the sum, max and min of fitness
+    # This part finds the sum, max and min of fitness
     for x in measured_population:
         fitness_sum += measured_population[x][1]
         if measured_population[x][1] > fitness_max: fitness_max = measured_population[x][1]
@@ -36,7 +36,7 @@ def parent_selection(measured_population, cheat=0.01):
     
     fitness_dif = fitness_max - fitness_min                 # Calculate the difference between max and min fitness
     
-    # This bit tries to normalise the values to a range of [0, 1]
+    # This part tries to normalise the values to a range of [0, 1]
     prob_max = 0
     for x in measured_population:
         probability = ((measured_population[x][1])-fitness_min)/fitness_dif # Redistribute the probability from range [fitness_min, fitness_max] to [0, 1]
@@ -45,7 +45,7 @@ def parent_selection(measured_population, cheat=0.01):
 
     scalar = 1/prob_max     # Calculate the scalar value that all probabilities need to be scaled by so that they sum to 1
 
-    # This bit scales the probabilities and calculates the expected number of individuals in the next population
+    # This part scales the probabilities and calculates the expected number of individuals in the next population
     for x in measured_population:
         measured_population[x][2] = measured_population[x][2]*scalar                        # Scale the probability
         measured_population[x].append(len(measured_population)*measured_population[x][2])   # Append the calculated expected amount of this indicidual to the array
@@ -53,15 +53,18 @@ def parent_selection(measured_population, cheat=0.01):
     parents = []        # Initialising a list that will contain the selected parents
     index = 0           # Initialising an index counter
 
-    # This bit selects which parents to choose for further reproduction
+    # This part selects which parents to choose for further reproduction
     while len(parents) != len(measured_population):                                                     # While the list isn't full
-        if measured_population[index][2] <= 0 and cheat < 0.1 : measured_population[index][2] += cheat  # If the probability is 0, then add a small "cheat" value to make it non-zero
+        print(f"{len(parents)} {len(measured_population)}")
+        if measured_population[index][2] < 0: measured_population[index][2] = 0                         # Ensure that all probabilities are at least 0. Because of some sloppy code, some probabilities can end up slightly negative
+        if cheat < 0.1 : measured_population[index][2] += cheat                                         # If the probability is 0, then add a small "cheat" value to make it non-zero
         count = 0                                                                                       # initiating the count of bitstrings
         for x in parents:                                                                               # Checking if the parents list already contains the
             if list_equals(x, measured_population[index][0]): count+=1                                  # expected amount of bitstrings. If some bitstring is extremely successfull
         if count < measured_population[index][3]:                                                       # then not restrincting it in that way would result in less variety in the parents
             if np.random.rand() <= measured_population[index][2]:                                       # Rolling the dice. If the random number is within the probability of the bitstring
                 parents.append(measured_population[index][0])                                           # then the bitstring gets appended to the parents list
+        else: print(f"{count} {np.floor(measured_population[index][3])}\n{measured_population}\n{parents}")
         if index+1 == len(measured_population): index = 0                                               # Since this is a while loop, indexing of the list gets reset if the index exceeds the lists length
         else: index += 1            # Since random numbers are rolled, the whole measured_population list might get passed by without a bitstring being added to the parents list, meaning that it needs to be reset
 
@@ -90,7 +93,7 @@ def xover(parents, mutation_coefficient=0.05):
             new_population.append(mutation(p2, mutation_coefficient))           # them to mutation
         else:
             new_population.append(mutation(parents.pop(), mutation_coefficient))# If the parent is alone, then just append it to the new population after subjecting it to mutation
-
+    
     return new_population
 
 def mutation(individual, mutation_coefficient):
@@ -128,17 +131,43 @@ def a_sin_of_the_times(bitstring):
     val = val/(np.power(2, len(bitstring))-1)*128               # Normalizing the value to the range [0, 128]
     return np.sin(val)                                          # Returning the sin of the normalized value
 
+def determine_termination(bitstring, fitness_function, threshold):
+    return fitness_function(bitstring) >= threshold
+
+def plot():
+    pass
+
+def SGA(individual_size=7, population_size=15, num_iterations=100, cheat=0.01, threshold=1):
+    print("Initialising population")
+    population = generate_initial_population(individual_size, population_size)
+    print("Checking fitness")
+    measured_population = eye_of_the_tiger(population, a_sin_of_the_times)
+
+    termination = False
+    iteration = 0
+    while not termination or iteration!=num_iterations:
+        iteration += 1
+        print(f"Iteration: {iteration}")
+        print("Selecting parents")
+        parents = parent_selection(measured_population, cheat)
+        print("Commencing pating")
+        children = xover(parents)
+        for child in children:
+            termination = determine_termination(child, a_sin_of_the_times, threshold)
+            if termination: 
+                print(f"Bitstring: {child}\nFitness:{a_sin_of_the_times(child)}\nIteration: {iteration}")
+        plot()
+        print("Checking children fitness")
+        measured_population = eye_of_the_tiger(children, a_sin_of_the_times)
+    if not termination:
+        print(f"Failed to converge in {num_iterations} iterations")
+        print(measured_population)
+
+
 #endregion-----------------------------------------------------------------
 
 #region------------------------Running the code------------------------
 
-population = generate_initial_population(5, 5)
-print(population)
-measured_population = eye_of_the_tiger(population, a_sin_of_the_times)
-print(measured_population)
-parents = parent_selection(measured_population, 0.1)
-print(parents)
-new_parents = xover(parents)
-print(new_parents)
+SGA()
 
 #endregion-------------------------------------------------------------

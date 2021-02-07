@@ -24,7 +24,7 @@ class LinReg():
         predictions = model.predict(x_test)
         error = sqrt(mean_squared_error(predictions, y_test))
 
-        return  error
+        return error
 
     def get_columns(self,x,bitstring):
         # Function to filter data based on a bitstring
