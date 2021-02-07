@@ -16,34 +16,50 @@ def parent_selection(measured_population, cheat=0.1):
     """
     Function that probabilistically selects which individuals to select for future breeding.
     """
-    fitness_sum=0                   # Instantiate the sum of all fitness across the population
-    fitness_max = float('-inf')     # Instantiate the max of fitness across the population
-    fitness_min = float('inf')      # Instantiate the min of fitness acroos the population
+    #region----------------------------------LEGACY----------------------------------
+    # I didn't like this approach, It felt convoluted and overcomplicated. This code was implemented before
+    # the a_sin_of_the_times function returned values between 0 and 1. When this code was written, that function
+    # returned only the sin(x) values, between -1 and 1
 
-    # This part finds the sum, max and min of fitness
-    for x in measured_population:
-        fitness_sum += measured_population[x][1]
-        if measured_population[x][1] > fitness_max: fitness_max = measured_population[x][1]
-        if measured_population[x][1] < fitness_min: fitness_min = measured_population[x][1]
+    # # fitness_max = float('-inf')     # Instantiate the max of fitness across the population
+    # # fitness_min = float('inf')      # Instantiate the min of fitness acroos the population
+
+    # # # This part finds the sum, max and min of fitness
+    # # for x in measured_population:
+    # #     fitness_sum += measured_population[x][1]
+    # #     if measured_population[x][1] > fitness_max: fitness_max = measured_population[x][1]
+    # #     if measured_population[x][1] < fitness_min: fitness_min = measured_population[x][1]
     
-    fitness_dif = fitness_max - fitness_min                 # Calculate the difference between max and min fitness
-    if fitness_dif == 0: fitness_dif = 0.0001
+    # # fitness_dif = fitness_max - fitness_min                 # Calculate the difference between max and min fitness
+    # # if fitness_dif == 0: fitness_dif = 0.0001
 
-    # This part tries to normalise the values to a range of [0, 1]
-    prob_max = 0
+    # # # This part tries to normalise the values to a range of [0, 1]
+    # # prob_max = 0
+    # # for x in measured_population:
+    # #     probability = ((measured_population[x][1])-fitness_min)/fitness_dif # Redistribute the probability from range [fitness_min, fitness_max] to [0, 1]
+    # #     measured_population[x].append(probability)                          # Append the probability to the array, so that the number is assosiated with the bitstring
+    # #     prob_max += probability                                             # Sum all the probabilities together so that you can later make all probabilities sum to 1
+
+    # # if prob_max == 0: prob_max = 1
+    # # scalar = 1/prob_max     # Calculate the scalar value that all probabilities need to be scaled by so that they sum to 1
+
+    # # # This part scales the probabilities and calculates the expected number of individuals in the next population
+    # # for x in measured_population:
+    # #     measured_population[x][2] = measured_population[x][2]*scalar                        # Scale the probability
+    # #     measured_population[x].append(len(measured_population)*measured_population[x][2])   # Append the calculated expected amount of this indicidual to the array
+    #endregion-------------------------------LEGACY----------------------------------
+
+    fitness_sum=0                                       # Instantiate the sum of all fitness across the population
+
     for x in measured_population:
-        probability = ((measured_population[x][1])-fitness_min)/fitness_dif # Redistribute the probability from range [fitness_min, fitness_max] to [0, 1]
-        measured_population[x].append(probability)                          # Append the probability to the array, so that the number is assosiated with the bitstring
-        prob_max += probability                                             # Sum all the probabilities together so that you can later make all probabilities sum to 1
+        fitness_sum += measured_population[x][1]        # Find the sum of fitness across this generation
 
-    if prob_max == 0: prob_max = 1
-    scalar = 1/prob_max     # Calculate the scalar value that all probabilities need to be scaled by so that they sum to 1
-
-    # This part scales the probabilities and calculates the expected number of individuals in the next population
+    if fitness_sum == 0: fitness_sum = 1                # Ensure that the sum is not zero. If it is, then make it 1 (because it will be divided by)
     for x in measured_population:
-        measured_population[x][2] = measured_population[x][2]*scalar                        # Scale the probability
-        measured_population[x].append(len(measured_population)*measured_population[x][2])   # Append the calculated expected amount of this indicidual to the array
-
+        prob = measured_population[x][1]/fitness_sum    # Find the percentege the fitness of the individual makes of the fitness of the entire generation
+        measured_population[x].append(prob)             # Append that probability
+        measured_population[x].append(len(measured_population)*prob)# Find out how many expected occurences of this individual there will be based on the probability
+        
     parents = []        # Initialising a list that will contain the selected parents
     index = 0           # Initialising an index counter
 
@@ -64,17 +80,26 @@ def parent_selection(measured_population, cheat=0.1):
 def xover(parents, mutation_coefficient=0.05):
     """
     The function that crosses the tails between parents to crate new children. It also adds the parents into the new population.
-    This is to ensure that if the parents are fitter than their children, then they're still in the genepool. Asexual mating is not allowed in this 
-    christian houshold, so if there is a lonly specimen left (such as the case when the population size is an odd number),
-    then that individual will not get to mate. After the crossover, the new children are subject to mutation. If there is
-    one parent that didn't get to mate, then it too is subject to mutation, so that it has at least a chance to change 
-    slightly before continuing into the new generation.
+    This is to ensure that if the parents are fitter than their children, then they're still in the genepool. 
+    Parents are inscentified to mate with different parents, but if there are no different individuals, then they can still
+    mate with identical individuals. Asexual reproduction is not allowed in this christian houshold, so if there is a lonly specimen 
+    left (such as the case when the population size is an odd number), then that individual will not get to mate. After the 
+    crossover, the new children are subject to mutation. If there is one parent that didn't get to mate, then it too is subject 
+    to mutation, so that it has at least a chance to change slightly before continuing into the new generation.
     """
     new_population = []                                                         # Initialize the array that will hold the new population
     while parents:                                                              # While the parent list is not empty
         if len(parents)%2 == 0:                                                 # If there are an even number of individuals
-            p1 = parents.pop()                                                  # Pop the first and second parents
-            p2 = parents.pop()
+            p1 = parents.pop()                                                  # Pop the first parent
+            p2 = []
+            if not np.array_equal(p1, parents[0]): p2 = parents.pop()           # Check if the next parent isin't identical to p1
+            else: 
+                for i in range(len(parents)):                                   # If the second parent is identical to the first, then check if there are non-identical
+                    if not np.array_equal(p1, parents[i]):                      # parents and set p2 to be the first non-identical parent
+                        p2 = parents.pop(i)
+                        break
+            if np.array_equal(p2, []): p2 = parents.pop()                       # If p2 has not been set yet after the check, then it means that there are only identical parents left, and so just pop the next parent
+            
             new_population.append(mutation(p1, mutation_coefficient))           # Putting the parents through mutation and adding them to the new population, ensuring
             new_population.append(mutation(p2, mutation_coefficient))           # that if they're better than their offspring, then the genepool still has their DNA in it
             l = np.random.randint(0, len(p1))                                   # Generate the length of the tail that will get crossed over to the other parent
@@ -129,7 +154,8 @@ def a_sin_of_the_times(bitstring):
     Function that takes a bitstring, calculates it's value in decimal,
     normalises it to be between 0 and 128 and returns the sin of the normalized value
     """
-    return np.sin(convert_bin_to_dec(bitstring))  # Returning the sin of the normalized value of the bitstring
+    return (np.sin(convert_bin_to_dec(bitstring))+1)/2  # Returning the (sin+1)/2 of the normalized value of the bitstring.
+                                                        # The +1 is to make all values above 0 , and the /2 is to make all values in range [0, 1]
 
 def convert_bin_to_dec(bitstring):
     """
@@ -162,8 +188,8 @@ def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterat
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
 
-    if crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times, population_size)# Evaluate the fitness of the initial population
-    else: measured_population = survivor_crowding(population, a_sin_of_the_times, population_size)
+    if crowding: measured_population = survivor_crowding(population, a_sin_of_the_times, population_size)# Evaluate the fitness of the initial population
+    else:  measured_population = eye_of_the_tiger(population, a_sin_of_the_times, population_size)      
     
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
     iteration = 0                                                                                       # Initialising an int that keeps track of the number of itirations
@@ -205,6 +231,6 @@ def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterat
 
 #region------------------------Running the code------------------------
 
-SGA(False, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.1, num_iterations=10, plot_step_size=1)
+SGA(False, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.01, num_iterations=10, plot_step_size=1)
 
 #endregion-------------------------------------------------------------
