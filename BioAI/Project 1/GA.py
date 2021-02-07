@@ -120,8 +120,9 @@ def eye_of_the_tiger(population, fitness_function, survivor_count):
     
     return survivors
 
-def survivor_crowding():
-    pass
+def survivor_crowding(population, fitness_function, survivor_count):
+    survivors = {}
+    return survivors
 
 def a_sin_of_the_times(bitstring):
     """
@@ -154,14 +155,16 @@ def plot(children):
     plt.ylabel("sin(x)")
     plt.show()
 
-def SGA(threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
+def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
     """
     Function that runs the SGA algorithm as shown in the progect description.
     """
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
-    measured_population = eye_of_the_tiger(population, a_sin_of_the_times, population_size)             # Evaluate the fitness of the initial population
 
+    if crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times, population_size)# Evaluate the fitness of the initial population
+    else: measured_population = survivor_crowding(population, a_sin_of_the_times, population_size)
+    
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
     iteration = 0                                                                                       # Initialising an int that keeps track of the number of itirations
     
@@ -202,6 +205,6 @@ def SGA(threshold=1, individual_size=7, population_size=15, num_iterations=100, 
 
 #region------------------------Running the code------------------------
 
-SGA(individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.1, num_iterations=10, plot_step_size=1)
+SGA(False, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.1, num_iterations=10, plot_step_size=1)
 
 #endregion-------------------------------------------------------------
