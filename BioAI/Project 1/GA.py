@@ -204,6 +204,16 @@ def convert_bin_to_dec(bitstring):
         val += bitstring[i]*np.power(2, len(bitstring)-1-i) # Calculating the value of the bitstring in base 10
     return val/(np.power(2, len(bitstring))-1)*128          # Return the value normalised to range between [0, 128]
 
+def convert_bin_to_dec_unnormalized(bitstring):
+    """
+    Utility function to convert binary strings to decimal numbers without normalizing the value 
+    to a range of [0, 128]
+    """
+    val = 0                                                 # Initialising a value
+    for i in range(0, len(bitstring)):
+        val += bitstring[i]*np.power(2, len(bitstring)-1-i) # Calculating the value of the bitstring in base 10
+    return val
+
 def plot(children, title):
     """
     Utility function to plot all children on the plot based on their fitness.
@@ -217,6 +227,18 @@ def plot(children, title):
     plt.title(title)
     plt.xlabel("x")
     plt.ylabel("sin(x)")
+    plt.show()
+
+def plot_fs(children, title):
+    """
+    Plotting the children of fs as points on a graph
+    """
+    for child in children:
+        plt.plot(convert_bin_to_dec_unnormalized(child), feature_selection_fitness(child), 'bo')# Plotting each child as a point on the graph
+    # Adding decorative text to the plot
+    plt.title(title)
+    plt.xlabel("Child value in decimal")
+    plt.ylabel("Fitness")
     plt.show()
 
 def SGA(fitness_function, feature_selection = False, crowding = True, crowding_mutation = True, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
@@ -234,7 +256,7 @@ def SGA(fitness_function, feature_selection = False, crowding = True, crowding_m
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     
     if feature_selection:
-        population = generate_initial_population(101, population_size)
+        population = generate_initial_population(data.shape[1], population_size)
     else: population = generate_initial_population(individual_size, population_size)                    # Generate the initial population
 
     entropy.append(measure_entropy(population))                                                         # Measure the entropy of the population
@@ -256,6 +278,7 @@ def SGA(fitness_function, feature_selection = False, crowding = True, crowding_m
         
         if not plot_step_size == 0 and iteration%plot_step_size == 0: 
             if not feature_selection: plot(children, title)                                             # Plotting the graph every time we're on a plotting step
+            else: plot_fs(children, title)
 
         fitness_max = [[], float('-inf')]                                                               # Initializing a value that'll keep track of this generation's closest thing to Einstein
         for child in children:
@@ -264,7 +287,7 @@ def SGA(fitness_function, feature_selection = False, crowding = True, crowding_m
             termination = fitness >= threshold                                                          # Checking if the child has reached the coveted threshold of fitness
             if termination: 
                 print("Found a suitable solution!")
-                print(f"Bitstring:{child}\nFitness:{fitness}\nIteration:{iteration}")                   # If the child has reached the threshold, then it's bitstring is printed out in the terminal
+                print(f"Bitstring:{child}\nFitness:{abs(fitness)}\nIteration:{iteration}")              # If the child has reached the threshold, then it's bitstring is printed out in the terminal
                 break                                                                                   # together with its fitness value
         best[iteration] = fitness_max                                                                   # This generation's closest thing to Einstein is added to the best dictionary
         if not crowding: measured_population = eye_of_the_tiger(children, fitness_function, len(children))  # The measured_population dictionary replaced with the new population measurements             
@@ -282,7 +305,7 @@ def SGA(fitness_function, feature_selection = False, crowding = True, crowding_m
             if best[x][1]>max_fitness:                                                                  # Finding the child that was the best out of all of the children thoughout the generations
                 max_fitness = best[x][1]
                 max_key = x
-        print(f"Bitstring: {best[max_key][0]}\nFitness: {best[max_key][1]}")                            # Printing out Einsteins bitstring and fitness value
+        print(f"Bitstring: {best[max_key][0]}\nFitness: {abs(best[max_key][1])}")                       # Printing out Einsteins bitstring and fitness value
     
     return entropy
 
@@ -334,15 +357,15 @@ if len(sys.argv) > 1 and sys.argv[1] == "FS":
     values = df[df.columns[-1]]
 
     print("Running the SGA with no crowding:")
-    entropy_no_crowding = SGA(feature_selection_fitness, feature_selection = True, crowding=False, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+    entropy_no_crowding = SGA(feature_selection_fitness, feature_selection = True, crowding=False, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=0)
     print("Running the SGA with crowding, no mutation")
-    entropy_crowding_no_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+    entropy_crowding_no_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=0)
     print("Running the SGA with crowding and with mutation")
-    entropy_crowding_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, crowding_mutation=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+    entropy_crowding_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, crowding_mutation=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=0)
 
     print("Getting fitness without feature selection")
     fitness = lr.get_fitness(data, values)
-    print(-fitness)
+    print(fitness)
 
 plt.plot(entropy_no_crowding, label = 'No crowding')
 plt.plot(entropy_crowding_no_mutation, label = 'Crowding, no mutation')
