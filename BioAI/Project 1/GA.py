@@ -79,13 +79,12 @@ def parent_selection(measured_population, cheat=0.1):
 
 def xover(parents, mutation_coefficient=0.05):
     """
-    The function that crosses the tails between parents to crate new children. It also adds the parents into the new population.
-    This is to ensure that if the parents are fitter than their children, then they're still in the genepool. 
-    Parents are inscentified to mate with different parents, but if there are no different individuals, then they can still
-    mate with identical individuals. Asexual reproduction is not allowed in this christian houshold, so if there is a lonly specimen 
-    left (such as the case when the population size is an odd number), then that individual will not get to mate. After the 
-    crossover, the new children are subject to mutation. If there is one parent that didn't get to mate, then it too is subject 
-    to mutation, so that it has at least a chance to change slightly before continuing into the new generation.
+    The function that crosses the tails between parents to crate new children. Parents are inscentified to mate with different parents, 
+    but if there are no different individuals, then they can still mate with identical individuals. Asexual reproduction is not allowed 
+    in this christian houshold, so if there is a lonly specimen left (such as the case when the population size is an odd number), then 
+    that individual will not get to mate. After the crossover, the new children are subject to mutation. If there is one parent that 
+    didn't get to mate, then it too is subject to mutation, so that it has at least a chance to change slightly before continuing into 
+    the new generation.
     """
     new_population = []                                                         # Initialize the array that will hold the new population
     while parents:                                                              # While the parent list is not empty
@@ -100,16 +99,11 @@ def xover(parents, mutation_coefficient=0.05):
                         break
             if np.array_equal(p2, []): p2 = parents.pop()                       # If p2 has not been set yet after the check, then it means that there are only identical parents left, and so just pop the next parent
             
-            new_population.append(mutation(p1, mutation_coefficient))           # Putting the parents through mutation and adding them to the new population, ensuring
-            new_population.append(mutation(p2, mutation_coefficient))           # that if they're better than their offspring, then the genepool still has their DNA in it
             l = np.random.randint(0, len(p1))                                   # Generate the length of the tail that will get crossed over to the other parent
-            for i in range(len(p1)):                                            # It's worth mentioning that the tail can be of length 0 or the entire bitstring
-                if i>len(p1)-l:                                                 # When the tail is reached
-                    temp = p1[i]                                                # Save the bit from the first parent
-                    p1[i] = p2[i]                                               # Change that bit to the bit of the second parent
-                    p2[i] = temp                                                # Change the bit of the second parent to that of the first
-            new_population.append(mutation(p1, mutation_coefficient))           # Append both new children to the new population after subjecting
-            new_population.append(mutation(p2, mutation_coefficient))           # them to mutation
+            c1 = np.concatenate((np.asarray(p1)[:l], np.asarray(p2)[l:]))       # Create child with head of the first parent and tail of the second
+            c2 = np.concatenate((np.asarray(p2)[:l], np.asarray(p1)[l:]))       # Create child with head of the second parent and tail of the first
+            new_population.append(mutation(c1, mutation_coefficient))           # Append both new children to the new population after subjecting
+            new_population.append(mutation(c2, mutation_coefficient))           # them to mutation
         else:
             new_population.append(mutation(parents.pop(), mutation_coefficient))# If the parent is alone, then just append it to the new population after subjecting it to mutation
     
@@ -125,29 +119,62 @@ def mutation(individual, mutation_coefficient):
             else: individual[x]=0
     return individual
 
-def eye_of_the_tiger(population, fitness_function, survivor_count):
+def eye_of_the_tiger(population, fitness_function):
     """
-    Function for survivor selection. `survivor_count` dictates how many survivors are left in the
-    population. The population is sorted by their fitness and then "trimmed", so that the worst
-    individuals don't survive.
+    Function for survivor selection. This doesn't really do anything besides evaluating the fitness of
+    each individual, allowing for parent selection to do the rest.
     """
-    population_fitness = {}                                         # Initialize a dictionary that will store the individuals' fitness
-    survivors = {}                                                  # Initialize a dictionary that will hold the survivors
+    survivors = {}                                                      # Initialize a dictionary that will hold the survivors
     for i in range(len(population)):
-        population_fitness[i]=fitness_function(population[i])       # Measure the fitness of each individual
-    
-    # Sorting the population by fitness, so that the fittest individuals are at the start, while the least fit individuals are at the end of the dictionary 
-    population_fitness = dict(sorted(population_fitness.items(), key=lambda item: item[1], reverse=True))
-
-    for i in range(survivor_count):
-        key = list(population_fitness.keys())[i]                    # Finding the keys to the most fit individuals. The key is their index in the population
-        survivors[i] = [population[key], population_fitness[key]]   # Adding the individual and their fitness to the survivors list.
-    
+        survivors[i] = [population[i], fitness_function(population[i])] # Measure the fitness of each individual
+        
     return survivors
 
-def survivor_crowding(population, fitness_function, survivor_count):
-    survivors = {}
+def survivor_crowding(population, fitness_function, mutation_coefficient, allow_mutation = True):
+    """
+    Function that uses deterministic crowding as described on page 197 of the D. Simon book.
+    This function uses 100% of the population to create children, which results in twice the 
+    amount of children than the population, meaning more chances to mutate. This does however
+    tank performance, meaning that optimisation could be implemented. A variable could be sent
+    into the function to chose an amount of randomly chosen individuals that get to mate, making
+    much less children.
+    """
+    survivors = {}                                                      # Initialize the dictionary that will hold survivors
+    children = []                                                       # Initialize the array that will hold the children
+    for x in population:
+        p1 = x                                                          # The first parent
+        p2 = population[np.random.randint(0, len(population))]          # The second parent chosen randomly
+        l = np.random.randint(0, len(x))                                # Random length of the tail to be crossed
+        c1 = np.concatenate((np.asarray(p1)[:l], np.asarray(p2)[l:]))   # Crossing the tails of first and second parent
+        c2 = np.concatenate((np.asarray(p2)[:l], np.asarray(p1)[l:]))
+        if allow_mutation:                                              # If mutation is allowed
+            c1 = mutation(c1, mutation_coefficient)                     # Put both children through mutation
+            c2 = mutation(c2, mutation_coefficient)     
+        children.append(c1)                                             # Append both children to the children array
+        children.append(c2)
+
+    for i in range(len(population)):                                    # Each parent is paired with a child that is the most
+        child = find_most_similar(population[i], children)              # similar to the parent without being identical
+        fitness_parent = fitness_function(population[i])                # Both child and parent's fitness values are calculated
+        fitness_child = fitness_function(child)
+        if fitness_parent < fitness_child:
+            survivors[i] = [child, fitness_child]                       # If the child is fitter, the child gets added to survivors
+        else: survivors[i] = [population[i], fitness_parent]            # If the parent is fitter, the parent gets added to survivors
+
     return survivors
+
+def find_most_similar(original, population):
+    """
+    Utility function for finding the most similar individual to the original. Note that it finds the
+    most similar, but not identical.
+    """
+    least_difference = float('inf')                                             # Initialize variable for keeping track of the difference
+    child = []                                                                  # Initialize variable for keeping track of the child
+    for x in population:
+        difference = abs(convert_bin_to_dec(original)-convert_bin_to_dec(x))    # Find the difference of the real world values of the bitstrings
+        if difference != 0 and difference < least_difference:                   # If the child is less different than the least different child, then 
+            child = x                                                           # replace the least different child with the new child
+    return child                                                                # return the most similar child
 
 def a_sin_of_the_times(bitstring):
     """
@@ -181,15 +208,16 @@ def plot(children):
     plt.ylabel("sin(x)")
     plt.show()
 
-def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
+def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
     """
     Function that runs the SGA algorithm as shown in the progect description.
     """
+    entropy = {}                                                                                        # Initialise a dictionary to hold the entropy of the SGA
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
 
-    if crowding: measured_population = survivor_crowding(population, a_sin_of_the_times, population_size)# Evaluate the fitness of the initial population
-    else:  measured_population = eye_of_the_tiger(population, a_sin_of_the_times, population_size)      
+    if not crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times)             # Evaluate the fitness of the initial population
+    else: measured_population = survivor_crowding(population, a_sin_of_the_times, mutation_coefficient, crowding_mutation)
     
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
     iteration = 0                                                                                       # Initialising an int that keeps track of the number of itirations
@@ -207,10 +235,11 @@ def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterat
             if fitness_max[1] < fitness: fitness_max = [child, fitness]                                 # Chhecking if the child is this generation's closest thing to Einstein
             termination = fitness >= threshold                                                          # Checking if the child has reached the coveted threshold of fitness
             if termination: 
-                print(f"Bitstring: {child}\nFitness:{a_sin_of_the_times(child)}\nIteration: {iteration}")#If the child has reached the threshold, then it's bitstring is printed out in the terminal
+                print(f"Bitstring:{child}\nFitness:{a_sin_of_the_times(child)}\nIteration:{iteration}") # If the child has reached the threshold, then it's bitstring is printed out in the terminal
                 break                                                                                   # together with its fitness value
         best[iteration] = fitness_max                                                                   # This generation's closest thing to Einstein is added to the best dictionary
-        measured_population = eye_of_the_tiger(children, a_sin_of_the_times, population_size)           # The measured_population dictionary replaced with the new population measurements
+        if not crowding: measured_population = eye_of_the_tiger(children, a_sin_of_the_times)           # The measured_population dictionary replaced with the new population measurements             
+        else: measured_population = survivor_crowding(children, a_sin_of_the_times, mutation_coefficient)#Differentiating between using and not using crowding
         
         if iteration == num_iterations: break                                                           # If the max number of itterations is reached, then break out of the lööp
 
@@ -226,11 +255,10 @@ def SGA(crowding, threshold=1, individual_size=7, population_size=15, num_iterat
                 max_key = x
         print(f"Bitstring: {best[max_key][0]}\nFitness: {best[max_key][1]}")                            # Printing out Einsteins bitstring and fitness value
 
-
 #endregion-----------------------------------------------------------------
 
 #region------------------------Running the code------------------------
 
-SGA(False, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.01, num_iterations=10, plot_step_size=1)
+SGA(crowding=True, crowding_mutation=True, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.01, num_iterations=100, plot_step_size=10)
 
 #endregion-------------------------------------------------------------
