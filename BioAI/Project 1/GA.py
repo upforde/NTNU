@@ -119,14 +119,23 @@ def mutation(individual, mutation_coefficient):
             else: individual[x]=0
     return individual
 
-def eye_of_the_tiger(population, fitness_function):
+def eye_of_the_tiger(population, fitness_function, survivor_count):
     """
-    Function for survivor selection. This doesn't really do anything besides evaluating the fitness of
-    each individual, allowing for parent selection to do the rest.
+    Function for survivor selection. `survivor_count` dictates how many survivors are left in the
+    population. The population is sorted by their fitness and then "trimmed", so that the worst
+    individuals don't survive.
     """
-    survivors = {}                                                      # Initialize a dictionary that will hold the survivors
+    population_fitness = {}                                         # Initialize a dictionary that will store the individuals' fitness
+    survivors = {}                                                  # Initialize a dictionary that will hold the survivors
     for i in range(len(population)):
-        survivors[i] = [population[i], fitness_function(population[i])] # Measure the fitness of each individual
+        population_fitness[i]=fitness_function(population[i])       # Measure the fitness of each individual
+
+    # Sorting the population by fitness, so that the fittest individuals are at the start, while the least fit individuals are at the end of the dictionary 
+    population_fitness = dict(sorted(population_fitness.items(), key=lambda item: item[1], reverse=True))
+
+    for i in range(survivor_count):
+        key = list(population_fitness.keys())[i]                    # Finding the keys to the most fit individuals. The key is their index in the population
+        survivors[i] = [population[key], population_fitness[key]]   # Adding the individual and their fitness to the survivors list.
         
     return survivors
 
@@ -193,7 +202,7 @@ def convert_bin_to_dec(bitstring):
         val += bitstring[i]*np.power(2, len(bitstring)-1-i) # Calculating the value of the bitstring in base 10
     return val/(np.power(2, len(bitstring))-1)*128          # Return the value normalised to range between [0, 128]
 
-def plot(children):
+def plot(children, title):
     """
     Utility function to plot all children on the plot based on their fitness.
     """
@@ -203,7 +212,7 @@ def plot(children):
     for child in children:
         plt.plot(convert_bin_to_dec(child), a_sin_of_the_times(child), 'bo')# Plotting each child as a point on the graph
     # Adding decorative text to the plot
-    plt.title("Simple Genetic Algorithm without crowding")
+    plt.title(title)
     plt.xlabel("x")
     plt.ylabel("sin(x)")
     plt.show()
@@ -212,13 +221,20 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
     """
     Function that runs the SGA algorithm as shown in the progect description.
     """
+    if crowding:
+        if crowding_mutation:
+            title = "SGA with crowding and mutation"                                                    # Setting the title for the plot
+        else: title = "SGA with crowding and no mutation"
+    else:
+        title = "SGA without crowding"
+    
     entropy = []                                                                                        # Initialise an array to hold the entropy of the SGA
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
 
     entropy.append(measure_entropy(population) )                                                        # Measure the entropy of the population
 
-    if not crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times)             # Evaluate the fitness of the initial population
+    if not crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times, len(population))# Evaluate the fitness of the initial population
     else: measured_population = survivor_crowding(population, a_sin_of_the_times, mutation_coefficient, crowding_mutation)
 
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
@@ -232,7 +248,7 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
         
         entropy.append(measure_entropy(children))                                                       # Measure the entropy of the population
         
-        if not plot_step_size == 0 and iteration%plot_step_size == 0: plot(children)                    # Plotting the graph every time we're on a plotting step
+        if not plot_step_size == 0 and iteration%plot_step_size == 0: plot(children, title)                    # Plotting the graph every time we're on a plotting step
         
         fitness_max = [[], float('-inf')]                                                               # Initializing a value that'll keep track of this generation's closest thing to Einstein
         for child in children:
@@ -243,7 +259,7 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
                 print(f"Bitstring:{child}\nFitness:{a_sin_of_the_times(child)}\nIteration:{iteration}") # If the child has reached the threshold, then it's bitstring is printed out in the terminal
                 break                                                                                   # together with its fitness value
         best[iteration] = fitness_max                                                                   # This generation's closest thing to Einstein is added to the best dictionary
-        if not crowding: measured_population = eye_of_the_tiger(children, a_sin_of_the_times)           # The measured_population dictionary replaced with the new population measurements             
+        if not crowding: measured_population = eye_of_the_tiger(children, a_sin_of_the_times, len(children))# The measured_population dictionary replaced with the new population measurements             
         else: measured_population = survivor_crowding(children, a_sin_of_the_times, mutation_coefficient)#Differentiating between using and not using crowding
 
         if iteration == num_iterations: break                                                           # If the max number of itterations is reached, then break out of the lööp
@@ -276,7 +292,7 @@ def measure_entropy(population):
 
 #region------------------------Running the code------------------------
 
-individual_size, population_size, threshold, mutation_coefficient, num_iterations, plot_step_size = 10, 100, 1, 0.05, 10, 1
+individual_size, population_size, threshold, mutation_coefficient, num_iterations, plot_step_size = 7, 15, 1, 0.05, 100, 10
 
 entropy_no_crowding = SGA(crowding=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
 
@@ -288,6 +304,7 @@ plt.plot(entropy_no_crowding, label = 'No crowding')
 plt.plot(entropy_crowding_no_mutation, label = 'Crowding, no mutation')
 plt.plot(entropy_crowding_mutation, label = 'Crowding, mutation')
 plt.legend()
+plt.title("Entropy levels of the three SGA algorithms")
 plt.show()
 
 #endregion-------------------------------------------------------------
