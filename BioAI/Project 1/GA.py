@@ -212,13 +212,15 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
     """
     Function that runs the SGA algorithm as shown in the progect description.
     """
-    entropy = {}                                                                                        # Initialise a dictionary to hold the entropy of the SGA
+    entropy = []                                                                                        # Initialise an array to hold the entropy of the SGA
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
     population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
 
+    entropy.append(measure_entropy(population) )                                                        # Measure the entropy of the population
+
     if not crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times)             # Evaluate the fitness of the initial population
     else: measured_population = survivor_crowding(population, a_sin_of_the_times, mutation_coefficient, crowding_mutation)
-    
+
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
     iteration = 0                                                                                       # Initialising an int that keeps track of the number of itirations
     
@@ -227,7 +229,10 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
 
         parents = parent_selection(measured_population, cheat)                                          # Running parent selection from the population
         children = xover(parents, mutation_coefficient)                                                 # Creating the children population
-        if iteration%plot_step_size == 0: plot(children)                                                # Plotting the graph every time we're on a plotting step
+        
+        entropy.append(measure_entropy(children))                                                       # Measure the entropy of the population
+        
+        if not plot_step_size == 0 and iteration%plot_step_size == 0: plot(children)                    # Plotting the graph every time we're on a plotting step
         
         fitness_max = [[], float('-inf')]                                                               # Initializing a value that'll keep track of this generation's closest thing to Einstein
         for child in children:
@@ -240,7 +245,7 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
         best[iteration] = fitness_max                                                                   # This generation's closest thing to Einstein is added to the best dictionary
         if not crowding: measured_population = eye_of_the_tiger(children, a_sin_of_the_times)           # The measured_population dictionary replaced with the new population measurements             
         else: measured_population = survivor_crowding(children, a_sin_of_the_times, mutation_coefficient)#Differentiating between using and not using crowding
-        
+
         if iteration == num_iterations: break                                                           # If the max number of itterations is reached, then break out of the lööp
 
     if not termination:                                                                                 # If the coveted threshold fitness value has not been reached when the lööp ends,
@@ -254,11 +259,35 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
                 max_fitness = best[x][1]
                 max_key = x
         print(f"Bitstring: {best[max_key][0]}\nFitness: {best[max_key][1]}")                            # Printing out Einsteins bitstring and fitness value
+    
+    return entropy
+
+def measure_entropy(population):
+    sums = np.zeros(population[0].shape)
+    entropy = 0
+    for x in population:
+        sums= np.add(np.asarray(sums), np.asarray(x))
+    for x in sums:
+        x_prob = x/len(sums)
+        if x_prob != 0: entropy += x*np.log2(x_prob)
+    return -entropy
 
 #endregion-----------------------------------------------------------------
 
 #region------------------------Running the code------------------------
 
-SGA(crowding=True, crowding_mutation=True, individual_size=10, population_size=100, threshold=1, mutation_coefficient=0.01, num_iterations=100, plot_step_size=10)
+individual_size, population_size, threshold, mutation_coefficient, num_iterations, plot_step_size = 10, 100, 1, 0.05, 10, 1
+
+entropy_no_crowding = SGA(crowding=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+
+entropy_crowding_no_mutation = SGA(crowding=True, crowding_mutation=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+
+entropy_crowding_mutation = SGA(crowding=True, crowding_mutation=True, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+
+plt.plot(entropy_no_crowding, label = 'No crowding')
+plt.plot(entropy_crowding_no_mutation, label = 'Crowding, no mutation')
+plt.plot(entropy_crowding_mutation, label = 'Crowding, mutation')
+plt.legend()
+plt.show()
 
 #endregion-------------------------------------------------------------
