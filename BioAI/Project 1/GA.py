@@ -1,6 +1,8 @@
-import LinReg
+import LinReg as linreg
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+import pandas as pd
 
 #region------------------------Function definitions------------------------
 
@@ -217,7 +219,7 @@ def plot(children, title):
     plt.ylabel("sin(x)")
     plt.show()
 
-def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
+def SGA(fitness_function, feature_selection = False, crowding = True, crowding_mutation = True, threshold=1, individual_size=7, population_size=15, num_iterations=100, cheat=0.1, mutation_coefficient=0.05, plot_step_size=10):
     """
     Function that runs the SGA algorithm as shown in the progect description.
     """
@@ -230,12 +232,16 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
     
     entropy = []                                                                                        # Initialise an array to hold the entropy of the SGA
     best = {}                                                                                           # Initialise a dictionary to hold the best individuals of all generations
-    population = generate_initial_population(individual_size, population_size)                          # Generate the initial population
+    
+    if feature_selection:
+        population = generate_initial_population(101, population_size)
+    else: population = generate_initial_population(individual_size, population_size)                    # Generate the initial population
 
-    entropy.append(measure_entropy(population) )                                                        # Measure the entropy of the population
+    entropy.append(measure_entropy(population))                                                         # Measure the entropy of the population
 
-    if not crowding: measured_population = eye_of_the_tiger(population, a_sin_of_the_times, len(population))# Evaluate the fitness of the initial population
-    else: measured_population = survivor_crowding(population, a_sin_of_the_times, mutation_coefficient, crowding_mutation)
+    if not crowding: 
+        measured_population = eye_of_the_tiger(population, fitness_function, len(population))           # Evaluate the fitness of the initial population
+    else: measured_population = survivor_crowding(population, fitness_function, mutation_coefficient, crowding_mutation)
 
     termination = False                                                                                 # Initialise the termination boolean. If this is true, then the wanted individual has appeared
     iteration = 0                                                                                       # Initialising an int that keeps track of the number of itirations
@@ -248,19 +254,21 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
         
         entropy.append(measure_entropy(children))                                                       # Measure the entropy of the population
         
-        if not plot_step_size == 0 and iteration%plot_step_size == 0: plot(children, title)                    # Plotting the graph every time we're on a plotting step
-        
+        if not plot_step_size == 0 and iteration%plot_step_size == 0: 
+            if not feature_selection: plot(children, title)                                             # Plotting the graph every time we're on a plotting step
+
         fitness_max = [[], float('-inf')]                                                               # Initializing a value that'll keep track of this generation's closest thing to Einstein
         for child in children:
-            fitness = a_sin_of_the_times(child)                                                         # Measuring fitness of each child
+            fitness = fitness_function(child)                                                           # Measuring fitness of each child
             if fitness_max[1] < fitness: fitness_max = [child, fitness]                                 # Chhecking if the child is this generation's closest thing to Einstein
             termination = fitness >= threshold                                                          # Checking if the child has reached the coveted threshold of fitness
             if termination: 
-                print(f"Bitstring:{child}\nFitness:{a_sin_of_the_times(child)}\nIteration:{iteration}") # If the child has reached the threshold, then it's bitstring is printed out in the terminal
+                print("Found a suitable solution!")
+                print(f"Bitstring:{child}\nFitness:{fitness}\nIteration:{iteration}")                   # If the child has reached the threshold, then it's bitstring is printed out in the terminal
                 break                                                                                   # together with its fitness value
         best[iteration] = fitness_max                                                                   # This generation's closest thing to Einstein is added to the best dictionary
-        if not crowding: measured_population = eye_of_the_tiger(children, a_sin_of_the_times, len(children))# The measured_population dictionary replaced with the new population measurements             
-        else: measured_population = survivor_crowding(children, a_sin_of_the_times, mutation_coefficient)#Differentiating between using and not using crowding
+        if not crowding: measured_population = eye_of_the_tiger(children, fitness_function, len(children))  # The measured_population dictionary replaced with the new population measurements             
+        else: measured_population = survivor_crowding(children, fitness_function, mutation_coefficient)     #Differentiating between using and not using crowding
 
         if iteration == num_iterations: break                                                           # If the max number of itterations is reached, then break out of the lööp
 
@@ -278,27 +286,63 @@ def SGA(crowding = True, crowding_mutation = True, threshold=1, individual_size=
     
     return entropy
 
+def feature_selection_fitness(bitstring):
+    """
+    Function for measuring the fitnes of feature selection bitstrings
+    """
+    new_data = lr.get_columns(data, bitstring)          # Get the data from the .csv file, omitting the columts represented by a 0 in the bitstring
+    fitness = lr.get_fitness(new_data, values)          # Send the new data together with the last column in the .csv file containing the labels info the linear regression algorightm 
+    return -fitness                                     # Since the fitness function measures error, we want to lower it to 0 or as low as possible. The 
+                                                        # algorithm is meant for maximising fitness, which is why this fitness value is inverted. By doing so, 
+                                                        # the highest possible fitness value becomes 0
+
 def measure_entropy(population):
-    sums = np.zeros(population[0].shape)
-    entropy = 0
+    """
+    Function that measures the entropy of the GA algorithm at runtime. It's worth mentioning that 
+    the entropy values may vary from run to run, as the bitstrings are instantiated randomly and
+    might mutate randomly as well. Also, the initial parameters might alter the entropy values.
+    """
+    sums = np.zeros(population[0].shape)                    # Initializing an array that will hold sums of each bit throughout a generaiton
+    entropy = 0                                             # Initializing the entropy variable
     for x in population:
-        sums= np.add(np.asarray(sums), np.asarray(x))
+        sums= np.add(np.asarray(sums), np.asarray(x))       # Sum each bit with all others at their respective positions
     for x in sums:
-        x_prob = x/len(sums)
-        if x_prob != 0: entropy += x*np.log2(x_prob)
-    return -entropy
+        x_prob = x/len(population)                          # Each bit gets divided by the amount of individuals in a generation to get the probability that that bit is a one in that generation
+        if x_prob != 0: entropy += x*np.log2(x_prob)        # All probabilities get summed into the total entropy of that generation
+    return -entropy                                         # The negative value of the entropy is returned
 
 #endregion-----------------------------------------------------------------
 
 #region------------------------Running the code------------------------
 
-individual_size, population_size, threshold, mutation_coefficient, num_iterations, plot_step_size = 7, 15, 1, 0.05, 100, 10
+if len(sys.argv) > 1 and sys.argv[1] == "SGA":
+    individual_size, population_size, threshold, mutation_coefficient, num_iterations, plot_step_size = int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7])
 
-entropy_no_crowding = SGA(crowding=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+    print("Running the SGA with no crowding:")
+    entropy_no_crowding = SGA(a_sin_of_the_times, crowding=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+    print("Running the SGA with crowding, no mutation")
+    entropy_crowding_no_mutation = SGA(a_sin_of_the_times, crowding=True, crowding_mutation=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+    print("Running the SGA with crowding and with mutation")
+    entropy_crowding_mutation = SGA(a_sin_of_the_times, crowding=True, crowding_mutation=True, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
 
-entropy_crowding_no_mutation = SGA(crowding=True, crowding_mutation=False, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+if len(sys.argv) > 1 and sys.argv[1] == "FS":
+    population_size, mutation_coefficient, num_iterations = int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4])
 
-entropy_crowding_mutation = SGA(crowding=True, crowding_mutation=True, individual_size=individual_size, population_size=population_size, threshold=threshold, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=plot_step_size)
+    lr = linreg.LinReg()
+    df = pd.read_csv("./Dataset.csv")
+    data = df.drop(columns=df.columns[-1])
+    values = df[df.columns[-1]]
+
+    print("Running the SGA with no crowding:")
+    entropy_no_crowding = SGA(feature_selection_fitness, feature_selection = True, crowding=False, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+    print("Running the SGA with crowding, no mutation")
+    entropy_crowding_no_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+    print("Running the SGA with crowding and with mutation")
+    entropy_crowding_mutation = SGA(feature_selection_fitness, feature_selection = True, crowding=True, crowding_mutation=True, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations)
+
+    print("Getting fitness without feature selection")
+    fitness = lr.get_fitness(data, values)
+    print(-fitness)
 
 plt.plot(entropy_no_crowding, label = 'No crowding')
 plt.plot(entropy_crowding_no_mutation, label = 'Crowding, no mutation')
@@ -306,5 +350,4 @@ plt.plot(entropy_crowding_mutation, label = 'Crowding, mutation')
 plt.legend()
 plt.title("Entropy levels of the three SGA algorithms")
 plt.show()
-
 #endregion-------------------------------------------------------------
