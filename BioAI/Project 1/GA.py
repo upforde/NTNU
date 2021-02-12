@@ -100,7 +100,7 @@ def xover(parents, mutation_coefficient=0.05):
                         p2 = parents.pop(i)
                         break
             if np.array_equal(p2, []): p2 = parents.pop()                       # If p2 has not been set yet after the check, then it means that there are only identical parents left, and so just pop the next parent
-            
+
             l = np.random.randint(0, len(p1))                                   # Generate the length of the tail that will get crossed over to the other parent
             c1 = np.concatenate((np.asarray(p1)[:l], np.asarray(p2)[l:]))       # Create child with head of the first parent and tail of the second
             c2 = np.concatenate((np.asarray(p2)[:l], np.asarray(p1)[l:]))       # Create child with head of the second parent and tail of the first
@@ -355,6 +355,9 @@ if len(sys.argv) > 1 and sys.argv[1] == "FS":
     df = pd.read_csv("./Dataset.csv")
     data = df.drop(columns=df.columns[-1])
     values = df[df.columns[-1]]
+    fitness = lr.get_fitness(data, values)
+    print(fitness)
+
 
     print("Running the SGA with no crowding:")
     entropy_no_crowding = SGA(feature_selection_fitness, feature_selection = True, crowding=False, population_size=population_size, threshold=0, mutation_coefficient=mutation_coefficient, num_iterations=num_iterations, plot_step_size=0)
