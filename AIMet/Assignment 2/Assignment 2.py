@@ -1,10 +1,10 @@
 import numpy as np
 
 # We first initialize the transitional matrix, and emission matrix with the given probabilities.
-fish_prob = np.array([0.8, 0.3])
-fish_prob_inv = np.array([0.2, 0.7])
-birds_prob = np.array([0.75, 0.2])
-birds_prob_inv = np.array([[0.25], [0.8]])
+fish_prob = np.array([0.8, 0.2])
+fish_prob_inv = np.array([0.3, 0.7])
+birds_prob = np.array([0.75, 0.25])
+birds_prob_inv = np.array([0.2, 0.8])
 
 def forward(current_state, evidence=None):
     """
