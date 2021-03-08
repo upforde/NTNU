@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="Network1" numsamples="10000" discsamples="10000">
+	<nodes>
+		<decision id="Check_discord">
+			<state id="Yes" />
+			<state id="No" />
+		</decision>
+		<cpt id="iamSleepl3ss">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.5 0.5 0 1</probabilities>
+		</cpt>
+		<cpt id="Hazarr">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.8 0.2 0 1</probabilities>
+		</cpt>
+		<cpt id="Piss_cake">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.6 0.4 0 1</probabilities>
+		</cpt>
+		<cpt id="Sell_Mango">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.9 0.1 0 1</probabilities>
+		</cpt>
+		<cpt id="Korthking">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.7 0.3 0 1</probabilities>
+		</cpt>
+		<cpt id="Bop">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.6 0.4 0 1</probabilities>
+		</cpt>
+		<cpt id="Mitz">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.8 0.2 0 1</probabilities>
+		</cpt>
+		<cpt id="vezosky">
+			<state id="Online" />
+			<state id="Offline" />
+			<parents>Check_discord</parents>
+			<probabilities>0.8 0.2 0 1</probabilities>
+		</cpt>
+		<cpt id="Tired">
+			<state id="Tired" />
+			<state id="Not_tired" />
+			<probabilities>0.2 0.8</probabilities>
+		</cpt>
+		<decision id="Choose_game">
+			<state id="Animal_Crossing" />
+			<state id="Super_Mario_Odyssey" />
+			<state id="Super_Smash_Bros_Ultimate" />
+			<state id="Valheim" />
+			<state id="For_Honor" />
+			<parents>iamSleepl3ss Hazarr Piss_cake Sell_Mango Korthking Bop Mitz vezosky Tired</parents>
+		</decision>
+		<cpt id="Animal_Crossing">
+			<state id="Play" />
+			<state id="Dont_play" />
+			<parents>Tired Choose_game</parents>
+			<probabilities>0.8 0.2 0 1 0 1 0 1 0 1 0.3 0.7 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="Super_Mario_Odyssey">
+			<state id="Play" />
+			<state id="Dont_play" />
+			<parents>Tired Choose_game</parents>
+			<probabilities>0 1 0 1 0 1 0 1 0 1 0 1 0.8 0.2 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="Super_Smash_Bros_Ultimate">
+			<state id="Play" />
+			<state id="Dont_play" />
+			<parents>Tired Choose_game Sell_Mango Bop Mitz</parents>
+			<probabilities>0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 0 0.66 0.34 0.66 0.34 0.34 0.66 0.66 0.34 0.34 0.66 0.34 0.66 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="Valheim">
+			<state id="Play" />
+			<state id="Dont_play" />
+			<parents>Tired Choose_game Hazarr iamSleepl3ss Piss_cake Korthking vezosky</parents>
+			<probabilities>0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 0 0.8 0.2 0.8 0.2 0.6 0.4 0.8 0.2 0.6 0.4 0.6 0.4 0.4 0.6 0.8 0.2 0.6 0.4 0.6 0.4 0.4 0.6 0.6 0.4 0.4 0.6 0.4 0.6 0.2 0.8 0.8 0.2 0.6 0.4 0.6 0.4 0.4 0.6 0.6 0.4 0.4 0.6 0.4 0.6 0.2 0.8 0.6 0.4 0.4 0.6 0.4 0.6 0.2 0.8 0.4 0.6 0.2 0.8 0.2 0.8 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="For_Honor">
+			<state id="Play" />
+			<state id="Dont_play" />
+			<parents>Tired Choose_game Korthking Piss_cake iamSleepl3ss</parents>
+			<probabilities>0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 0 0.66 0.34 0.66 0.34 0.34 0.66 0.66 0.34 0.34 0.66 0.34 0.66 0 1</probabilities>
+		</cpt>
+		<utility id="Cost_of_checking">
+			<parents>Check_discord</parents>
+			<utilities>-15 0</utilities>
+		</utility>
+		<utility id="AC_Fun">
+			<parents>Animal_Crossing</parents>
+			<utilities>80 0</utilities>
+		</utility>
+		<utility id="SMO_Fun">
+			<parents>Super_Mario_Odyssey</parents>
+			<utilities>80 0</utilities>
+		</utility>
+		<utility id="SSBU_Fun">
+			<parents>Super_Smash_Bros_Ultimate</parents>
+			<utilities>100 0</utilities>
+		</utility>
+		<utility id="V_Fun">
+			<parents>Valheim</parents>
+			<utilities>100 0</utilities>
+		</utility>
+		<utility id="FH_Fun">
+			<parents>For_Honor</parents>
+			<utilities>100 0</utilities>
+		</utility>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 3.0.6128.0 ACADEMIC" name="Network1">
+			<node id="Check_discord">
+				<name>Check discord</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>159 55 281 100</position>
+			</node>
+			<node id="iamSleepl3ss">
+				<name>iamSleepl3ss</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>327 113 402 159</position>
+			</node>
+			<node id="Piss_cake">
+				<name>Piss cake</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>448 117 509 155</position>
+			</node>
+			<node id="Korthking">
+				<name>Korthking</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>552 118 611 154</position>
+			</node>
+			<node id="vezosky">
+				<name>vezosky</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>662 119 718 154</position>
+			</node>
+			<node id="Hazarr">
+				<name>Hazarr</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>342 173 391 203</position>
+			</node>
+			<node id="Sell_Mango">
+				<name>Sell-Mango</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>446 168 512 209</position>
+			</node>
+			<node id="Bop">
+				<name>Bop</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>564 176 604 201</position>
+			</node>
+			<node id="Mitz">
+				<name>Mitz</name>
+				<interior color="f0e1ff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>670 176 710 201</position>
+			</node>
+			<node id="Choose_game">
+				<name>Choose game</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>160 134 282 179</position>
+			</node>
+			<node id="Animal_Crossing">
+				<name>Animal Crossing</name>
+				<interior color="ffffff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>108 249 197 304</position>
+			</node>
+			<node id="Super_Mario_Odyssey">
+				<name>Super Mario Odyssey</name>
+				<interior color="ffffff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>231 250 314 301</position>
+			</node>
+			<node id="Super_Smash_Bros_Ultimate">
+				<name>Super Smash Bros Ultimate</name>
+				<interior color="ffffff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>360 246 459 307</position>
+			</node>
+			<node id="Valheim">
+				<name>Valheim</name>
+				<interior color="ffffff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>515 260 569 293</position>
+			</node>
+			<node id="For_Honor">
+				<name>For Honor</name>
+				<interior color="ffffff" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>630 255 692 293</position>
+			</node>
+			<node id="Cost_of_checking">
+				<name>Cost of checking</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>40 63 116 95</position>
+			</node>
+			<node id="AC_Fun">
+				<name>AC_Fun</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>122 340 181 372</position>
+			</node>
+			<node id="SMO_Fun">
+				<name>SMO_Fun</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>238 340 305 372</position>
+			</node>
+			<node id="SSBU_Fun">
+				<name>SSBU_Fun</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>372 340 444 372</position>
+			</node>
+			<node id="V_Fun">
+				<name>V_Fun</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>515 340 567 372</position>
+			</node>
+			<node id="FH_Fun">
+				<name>FH_Fun</name>
+				<interior color="ffff99" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>633 340 690 372</position>
+			</node>
+			<node id="Tired">
+				<name>Tired</name>
+				<interior color="e9e9e9" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>71 142 114 168</position>
+			</node>
+		</genie>
+	</extensions>
+</smile>
