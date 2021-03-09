@@ -1,5 +1,5 @@
-mdvrm: main.o
-	g++ main.o -0 mdvrm
+mdvrp: main.o
+	g++ main.o -o mdvrp
 
 main.o: main.cpp
 	g++ -c main.cpp
