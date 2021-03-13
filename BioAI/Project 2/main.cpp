@@ -2,6 +2,6 @@
 
 int main()
 {
-    GA::run("p01", 0);
+    GA::run("p01", 10);
     return 0;
 }

@@ -26,16 +26,6 @@ void Depot::set_coords(int x, int y)
     this->coord_y = y;
 }
 
-void Depot::assign_customer(int customer)
-{
-    this->customers.push_back(customer);
-}
-
-void Depot::unassign_customer(int customer)
-{
-    this->customers.erase(std::find(this->customers.begin(), this->customers.end(), customer));
-}
-
 // TODO: make depots make routes
 void Depot::assign_route(std::vector<Customer> order)
 {
