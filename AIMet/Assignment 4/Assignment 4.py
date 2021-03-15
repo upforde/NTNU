@@ -1,4 +1,4 @@
-from numpy.matrixlib.defmatrix import matrix
+from math import nan
 import pandas as pd
 import numpy as np
 import random
@@ -16,10 +16,6 @@ class Tree():
             if isinstance(branch[1], Tree): branch[1].print_tree()
             if isinstance(branch[1], Tree): print(f"{self.label}: \"{branch[0]}\"")
             else: print(f"{self.label} ; {branch[0]}: {branch[1]}")
-
-    def test(self, example):
-        return
-
 
 def decision_tree_learning(examples, attributes, parent_examples = pd.DataFrame()):
     if examples.empty: return plurality_value(parent_examples)
@@ -84,17 +80,37 @@ def calc_entropy(var, a, examples):
     else: k_entropy = prob * np.math.log2(prob) + (1-prob) * np.math.log2(1-prob) 
     return k_entropy, sum_val
 
+def test_tree(tree, example):
+    root = tree
+    while(True):
+        for branch in root.branches:
+            if branch[0]==example[root.label]:
+                if isinstance(branch[1], Tree):
+                    root = branch[1]
+                else:
+                    return branch[1]
+        return 0
+
 train_df = pd.read_csv("./titanic/train.csv")
 test_df = pd.read_csv("./titanic/test.csv")
 
 attributes = train_df.keys().tolist()
-attributes.remove('Survived')
-attributes.remove('Age')
-attributes.remove('Name')
-attributes.remove('SibSp')
-attributes.remove('Parch')
-attributes.remove('Ticket')
+
+to_remove = ['Survived', 'Name', 'Age']
+
+for attribute in to_remove:
+    attributes.remove(attribute)
 
 tree = decision_tree_learning(train_df, attributes)
 
 tree.print_tree()
+
+accuracy = 0
+i = 0
+for index, row in train_df.iterrows():
+    guess = test_tree(tree, row)
+    if guess == row['Survived']: 
+        accuracy += 1
+    i = index
+
+print(f"Accuracy: {accuracy/i}")
