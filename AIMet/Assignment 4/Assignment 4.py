@@ -167,10 +167,11 @@ def test_tree(tree, example):
 continuous = ['Age', 'SibSp', 'Parch', 'Fare']
 
 # Choosing the attributes to grow the tree with
-if   argv[1] == "0": attributes = ['Pclass', 'Sex', 'Embarked']
-elif argv[1] == "1": attributes = ['Pclass', 'Name', 'Sex', 'Embarked']
-elif argv[1] == "2": attributes = ['Pclass', 'Sex', 'Cabin', 'Embarked']
-elif argv[1] == "3": attributes = ['Pclass', 'Name', 'Sex', 'Cabin', 'Embarked']
+if len(argv) == 2:
+    if   argv[1] == "0": attributes = ['Pclass', 'Sex', 'Embarked']
+    elif argv[1] == "1": attributes = ['Pclass', 'Name', 'Sex', 'Embarked']
+    elif argv[1] == "2": attributes = ['Pclass', 'Sex', 'Cabin', 'Embarked']
+    elif argv[1] == "3": attributes = ['Pclass', 'Name', 'Sex', 'Cabin', 'Embarked']
 else: attributes = ['Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']
 print(attributes)
 
