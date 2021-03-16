@@ -58,8 +58,8 @@ def plurality_value(examples):
     for example in examples['Survived']:
         values[example] += 1
     if values[0] == values[1]: return random.randint(0, 1)
-    elif values[0] < values[1]: return 0
-    else: return 1
+    elif values[0] < values[1]: return 1
+    else: return 0
 
 def max_importance(attributes, examples):
     '''
