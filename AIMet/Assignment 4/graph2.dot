@@ -1,7 +1,7 @@
 graph MyGraph {
     // Attributes
     node [shape = rect, style = filled, color = deepskyblue]
-    Embarked;pc[label=Pclass];pc1s[label=Sex];
+    Embarked;pc[label=Pclass];pc1s[label=Name];
     Pclass;Sex;Name;
     // Values
     node [shape = square, style = filled, color = green]
@@ -14,8 +14,8 @@ graph MyGraph {
     subgraph cluster_Q{
         color = white
         pc -- pc1s [xlabel = "1   "];
-        pc1s -- sm[label = "m"];
-        pc1s -- sf[label = f];
+        pc1s -- sm[label = "Minahan, \nDr. William Edward"];
+        pc1s -- sf[label = "Minahan, \nMiss. Daisy E"];
     }
     
     subgraph cluster_abbreviation{
