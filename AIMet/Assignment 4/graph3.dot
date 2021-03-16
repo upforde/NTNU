@@ -1,0 +1,34 @@
+graph myGraph{
+    others[shape = rect]
+    node [shape = rect, style = filled, color = deepskyblue]
+    Cabin;
+    node [label = Embarked];
+    psee;
+    node [label = Sex];
+    Sex;spc;se;
+    node [label = Pclass];
+    Pclass;pse;
+    node [shape = square, style = filled, color = green]
+    value[label = value];
+    node [label = 0];
+    0;s0;s;
+    node [label = 1];
+    1;s1;c;f;
+    
+    Cabin -- value[label = "some cabin"];
+    Cabin -- Sex[label = "D21 "];
+    Sex -- 1[label = f];
+    Sex -- 0[label = m];
+    Cabin -- Pclass[label = C68];
+    Pclass -- spc[label = "1"];
+    spc -- s0[label = m];
+    spc -- s1[label = f];
+    Cabin -- se[label = "'B51 B53 B55'"];
+    se -- pse[label = m];
+    pse -- psee[label = 1];
+    psee -- s[label = S];
+    psee -- c[label = C];
+    se -- f[label = f];
+    Cabin -- others[xlabel = "..."]
+
+}

@@ -1,0 +1,37 @@
+graph MyGraph {
+    // Attributes
+    node [shape = rect, style = filled, color = deepskyblue]
+    Embarked;pc[label=Pclass];pc1s[label=Sex];
+    Pclass;Sex;Name;
+    // Values
+    node [shape = square, style = filled, color = green]
+    sm[label = 0];sf[label = 1];
+    
+    Embarked -- Pclass [label = "C"];
+    Embarked -- Pclass [label = "S"];
+    Embarked -- pc [label = "Q"];
+
+    subgraph cluster_Q{
+        color = white
+        pc -- pc1s [xlabel = "1   "];
+        pc1s -- sm[label = "m"];
+        pc1s -- sf[label = f];
+    }
+    
+    subgraph cluster_abbreviation{
+        Pclass -- Sex [label = 1];
+        Pclass -- Sex [xlabel = 2];
+        Pclass -- Sex [label = 3];pc -- Sex [label = 3]
+        pc -- Sex[label = 2];
+        Sex -- Name [label = m];
+        Sex -- Name [label = f];
+        Name -- 0;
+        Name -- "..."[xlabel = "  some"];
+        Name -- "..."[xlabel = " name"];
+        Name -- "...";
+        Name -- 1;
+
+        label = "abbrviation";
+        color = black;
+    }
+}

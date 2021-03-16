@@ -39,11 +39,11 @@ def decision_tree_learning(examples, attributes, parent_examples = pd.DataFrame(
     if examples.empty: return plurality_value(parent_examples)
     elif examples['Survived'].unique().size == 1: return examples['Survived'].unique()[0]
     elif not attributes: return plurality_value(examples)
-    else: 
+    else:
         attribute = max_importance(attributes, examples)
         tree = Tree(attribute)
-        for value in examples[attribute].unique():
-            eks = examples.loc[(examples[attribute]==value)]
+        for value in get_values(attribute, examples):
+            eks = get_examples(value, attribute, examples)
             new_attributes = attributes.copy()
             new_attributes.remove(attribute)
             subtree = decision_tree_learning(eks, new_attributes, examples)
@@ -132,6 +132,14 @@ def calc_entropy(var, a, examples):
     else: k_entropy = -prob * np.math.log2(prob) - (1-prob) * np.math.log2(1-prob) 
     # Returning both the calculated entropy and the amount of examples
     return k_entropy, sum_val
+
+def get_values(attribute, examples):
+    if attribute not in continuous: return examples[attribute].unique()
+    else: return 
+
+def get_examples(value, attribute, examples):
+    if attribute not in continuous: return examples.loc[(examples[attribute]==value)]
+    else: return
 
 def test_tree(tree, example):
     '''
