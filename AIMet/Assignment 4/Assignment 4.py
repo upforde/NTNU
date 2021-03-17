@@ -224,13 +224,8 @@ if len(argv) == 2:
     elif argv[1] == "2": attributes = ['Pclass', 'Sex', 'Cabin', 'Embarked']
     elif argv[1] == "3": attributes = ['Pclass', 'Name', 'Sex', 'Cabin', 'Embarked']
     elif argv[1] == "-1": attributes = ['Cabin']
-else: attributes = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Cabin', 'Embarked']
+else: attributes = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
 print(attributes)
-
-# atr = ['Alt','Bar','Fri','Hun','Pat','Rain','Res','Type']
-# test = pd.read_csv("Restaurants.csv")
-# tree = decision_tree_learning(test, atr)
-# tree.print_tree()
 
 # Running the training algorithm, growing the tree
 train_df = pd.read_csv("./titanic/train.csv")

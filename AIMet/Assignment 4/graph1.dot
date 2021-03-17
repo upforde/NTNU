@@ -1,3 +1,40 @@
 graph MyGraph {
-    
+    node[shape=rect, style=filled, color=deepskyblue]
+    Sex;
+    node[label = Pclass];
+    pc1;pc2;
+    node[label = Embarked];
+    e1;e2;e3;e4;e5;e6;
+    node[shape=square,style=filled,color=green];
+    node[label = 0];
+    e1 -- 1[label = Q];
+    e1 -- 2[label = C];
+    e1 -- 3[label = S];
+    e2 -- 4[label = Q];
+    e2 -- 5[label = C];
+    e2 -- 6[label = S];
+    e3 -- 7[label = Q];
+    e3 -- 8[label = C];
+    e3 -- 9[label = S];
+    node[label = 1];
+    e4 -- a[label = Q];
+    e4 -- b[label = C];
+    e4 -- c[label = S];
+    e5 -- d[label = Q];
+    e5 -- e[label = C];
+    e5 -- f[label = S];
+    e6 -- g[label = Q];
+    e6 -- h[label = C];
+    e6 -- i[label = S];
+
+    Sex -- pc1[label = m];
+    Sex -- pc2[label = f];
+
+    pc1 -- e1[label = 1];
+    pc1 -- e2[label = 2];
+    pc1 -- e3[label = 3];
+
+    pc2 -- e4[label = 1];
+    pc2 -- e5[label = 2];
+    pc2 -- e6[label = 3];
 }

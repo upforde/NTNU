@@ -1,39 +1,31 @@
 graph myGraph{
-    others[shape = rect]
     node [shape = rect, style = filled, color = deepskyblue]
-    Cabin;
-    node [label = Embarked];
-    psee;
-    node [label = Sex];
-    Sex;spc;se;
+    node [label = Cabin];
+    node [label = Fare];
+    Fare;
+    node [label = Parch];
+    parch1;
+    node [label = SibSp];
     node [label = Pclass];
-    Pclass;pse;
-    node [label = Name];
-    name;
-    node [shape = square, style = filled, color = green]
-    value[label = value];
-    node [label = 0];
-    0;s0;s;n1;
-    node [label = 1];
-    1;s1;c;f;n2;
-    
-    Cabin -- value[label = "some cabin"];
-    Cabin -- Sex[label = "D21 "];
-    Sex -- 1[label = f];
-    Sex -- 0[label = m];
-    Cabin -- Pclass[label = C68];
-    Pclass -- spc[label = "1"];
-    spc -- s0[label = m];
-    spc -- s1[label = f];
-    Cabin -- se[label = "'B51 B53 B55'"];
-    se -- pse[label = m];
-    pse -- psee[label = 1];
-    psee -- s[label = S];
-    psee -- c[label = C];
-    se -- f[label = f];
-    Cabin -- others[xlabel = "..."]
-    Cabin -- name[label = C2];
-    name -- n1[label = "Pears, Mr.\nThomas Clinton"];
-    name -- n2[label = "Pears, Mrs.\n Thomas \n(Edith Wearne)"];
+    node [label = Age];
+    age1;age2;
+    node [label = Embarked];
+    node [label = Sex];
+    sex1;sex2
 
+
+    node [shape = square, style = filled, color = green]
+    node [label = 0];
+    node [label = 1];
+    f1;
+
+    Fare -- age1[label = "\\geq27.825"];
+    age1 -- sex1[label = "\\geq52.5"];
+    sex1 -- f1[label = f];
+    sex1 -- parch1[label = m];
+
+    age1 -- sex2;
+
+    Fare -- age2[label = "$<$27.825"];
+    
 }
