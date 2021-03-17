@@ -1,8 +1,11 @@
 from sys import argv
 from numpy.core.numeric import NaN
+from numpy.lib.arraysetops import isin
 import pandas as pd
 import numpy as np
 import random
+
+from pandas.io.parsers import read_csv
 
 class Tree():
     '''
@@ -86,60 +89,100 @@ def importance(a, examples):
     '''
     Calculates the information gain of an attribute given examples
     '''
-    return entropy(a, examples) - remainder(a, examples)
+    p = len(examples[examples['Survived'] == 1])
+    n = len(examples[examples['Survived'] == 0])
 
-def entropy(a, examples):
-    '''
-    Calculates the total entropy of the given attribute in the provided examples
-    '''
-    entropy = 0
-    # Going through each variable in the given attribute a
-    for var in examples[a].unique():
-        # Calculating the entropy for that variable of the attribute
-        k_entropy, _ = calc_entropy(var, a, examples)
-        # Calculating the total entropy
-        entropy += k_entropy
-    return entropy
+    return calc_entropy(p, n) - remainder(a, examples)
             
 def remainder(a, examples):
     '''
     Calculating the remainder, which is the weighted sum of entropy of each variable in a given attribute
     '''
     remainder = 0
-    total = examples['Survived'].size
-    # Going through each variable in the given attribute a
-    for var in examples[a].unique():
-        # Calculating the entropy for this variable of the attribute
-        k_entropy, sum_val = calc_entropy(var, a, examples)
-        # Calculating the weighted sum of entropies
-        remainder += (sum_val/total) * k_entropy
+    p = examples[examples['Survived'] == 1]
+    n = examples[examples['Survived'] == 0]
+
+    # For each value in an attribute
+    for value in examples[a].unique():
+        pos = p[p[a] == value]
+        neg = n[n[a] == value]
+        # Calculating the weighted sum of the entropy of each value
+        remainder += (len(pos) + len(neg)) / (len(p) + len(n)) * calc_entropy(len(pos), len(neg))
+    # Returning the remainder
     return remainder
 
-def calc_entropy(var, a, examples):
-    '''
-    Calculates the entropy of a given variable of a given attribute in the provided examples.
-    '''
-    values = [0, 0]
-    # Goes through all where the attribute is of the variable value
-    for _, row in examples.loc[(examples[a]==var)].iterrows():
-        values[row['Survived']] += 1
-    # Getting the amount of examples where the attribute is of the variable value
-    sum_val = values[0]+values[1]
-    # Defining 0log2(0) = 0
-    prob = values[1]/sum_val if sum_val != 0 else 0
-    if prob == 0 or prob == 1: k_entropy = 0
-    # Calculating the entropy given the variable of a given attribute in the provided examples
-    else: k_entropy = -prob * np.math.log2(prob) - (1-prob) * np.math.log2(1-prob) 
-    # Returning both the calculated entropy and the amount of examples
-    return k_entropy, sum_val
+def calc_entropy(p, n):
+    # Checking that the probability will not be 0 or 1
+    if p == 0 or p+n == 0 or p+n == p: return 0
+    else: 
+        # Getting the probability
+        prob = p / (p+n)
+        # Calculating the entropy
+        return - (prob * np.math.log2(prob) + (1 - prob) * np.math.log2(1 - prob))
 
 def get_values(attribute, examples):
-    if attribute not in continuous: return examples[attribute].unique()
-    else: return 
+    if attribute == 'Cabin': return get_cabin_values(examples)
+    elif attribute not in continuous: return examples[attribute].unique()
+    else: return get_continuous_values(attribute, examples)
+
+def get_cabin_values(examples):
+    unique = []
+    for value in examples['Cabin'].values:
+        if not isinstance(value, float):
+            char = ''.join([i for i in value if not i.isdigit()])
+            if char[0] not in unique: unique.append(char[0])
+    return unique
+
+def get_continuous_values(attribute, examples):
+    potential_splits = []
+    sorted = examples.sort_values(by=attribute)
+    prev_row = sorted.iloc[0]
+    for _, row in sorted.iterrows():
+        if str(row[attribute]) != "nan":
+            if row['Survived'] != prev_row['Survived']:
+                val = (prev_row[attribute]+row[attribute])/2
+                if val not in potential_splits: potential_splits.append(val)
+            prev_row = row
+    split = find_split(potential_splits, attribute, examples)
+    values = [f"<{split}", f">={split}"]
+    return values
+
+def find_split(potential_splits, attribute, examples):
+    split = 0
+    highest_info_gain = 0
+    for potential_split in potential_splits:
+        under = examples[examples[attribute]<potential_split]
+        p_under = len(under[under['Survived']==1])
+        n_under = len(under[under['Survived']==0])
+        over = examples[examples[attribute]>=potential_split]
+        p_over = len(over[over['Survived']==1])
+        n_over = len(over[over['Survived']==0])
+
+        entropy_under = calc_entropy(p_under, n_under)
+        entropy_over = calc_entropy(p_over, n_over)
+        entropy = entropy_under + entropy_over
+        remainder_under = (p_under + n_under)/(len(under) + len(over)) * entropy_under
+        remainder_over = (p_over + n_over)/(len(under) + len(over)) * entropy_over
+
+        info_gain = entropy - (remainder_under + remainder_over)
+
+        if info_gain > highest_info_gain: 
+            highest_info_gain = info_gain
+            split = potential_split
+
+    return split
 
 def get_examples(value, attribute, examples):
-    if attribute not in continuous: return examples.loc[(examples[attribute]==value)]
-    else: return
+    if attribute == 'Cabin': return examples[(examples[attribute].str.contains(value, na=False))]
+    elif attribute not in continuous: return examples.loc[(examples[attribute]==value)]
+    else: return get_continuous_examples(value, attribute, examples)
+
+def get_continuous_examples(value, attribute, examples):
+    if value[0] == "<":
+        return examples[examples[attribute]<float(value[1:])]
+    else:
+        return examples[examples[attribute]>=float(value[2:])]
+    return
 
 def test_tree(tree, example):
     '''
@@ -180,8 +223,14 @@ if len(argv) == 2:
     elif argv[1] == "1": attributes = ['Pclass', 'Name', 'Sex', 'Embarked']
     elif argv[1] == "2": attributes = ['Pclass', 'Sex', 'Cabin', 'Embarked']
     elif argv[1] == "3": attributes = ['Pclass', 'Name', 'Sex', 'Cabin', 'Embarked']
-else: attributes = ['Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']
+    elif argv[1] == "-1": attributes = ['Cabin']
+else: attributes = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Cabin', 'Embarked']
 print(attributes)
+
+# atr = ['Alt','Bar','Fri','Hun','Pat','Rain','Res','Type']
+# test = pd.read_csv("Restaurants.csv")
+# tree = decision_tree_learning(test, atr)
+# tree.print_tree()
 
 # Running the training algorithm, growing the tree
 train_df = pd.read_csv("./titanic/train.csv")
@@ -196,5 +245,5 @@ for index, row in test_df.iterrows():
     guess = test_tree(tree, row)
     if guess == row['Survived']: 
         accuracy += 1
-    i = index
+    i += 1
 print(f"Accuracy: {accuracy/i}")
