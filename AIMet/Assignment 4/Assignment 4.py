@@ -223,7 +223,7 @@ if len(argv) == 2:
     elif argv[1] == "1": attributes = ['Pclass', 'Name', 'Sex', 'Embarked']
     elif argv[1] == "2": attributes = ['Pclass', 'Sex', 'Cabin', 'Embarked']
     elif argv[1] == "3": attributes = ['Pclass', 'Name', 'Sex', 'Cabin', 'Embarked']
-    elif argv[1] == "-1": attributes = ['Cabin']
+    elif argv[1] == "4": attributes = ['Age', 'Sex']
 else: attributes = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
 print(attributes)
 
