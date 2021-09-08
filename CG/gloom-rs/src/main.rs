@@ -37,9 +37,33 @@ fn offset<T>(n: u32) -> *const c_void {
 // ptr::null()
 
 
-
 // == // Modify and complete the function below for the first task
-// unsafe fn FUNCTION_NAME(ARGUMENT_NAME: &Vec<f32>, ARGUMENT_NAME: &Vec<u32>) -> u32 { } 
+unsafe fn set_up_vao(arr_vertices: &Vec<f32>, arr_indecies: &Vec<u32>) -> u32 { 
+    // Creating and binding the VAO
+    let mut array: u32 = 0;
+    gl::GenVertexArrays(1, &mut array as *mut u32);
+    gl::BindVertexArray(array);
+
+    // Creating and binding the buffer
+    let mut buffer: u32 = 0;
+    gl::GenBuffers(1, &mut buffer as *mut u32);
+    gl::BindBuffer(gl::ARRAY_BUFFER, buffer);
+
+    // Filling the buffer
+    gl::BufferData(gl::ARRAY_BUFFER, byte_size_of_array(&arr_vertices), pointer_to_array(&arr_vertices), gl::STATIC_DRAW);
+
+    // Setting up the vertex attributes
+    gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+    gl::EnableVertexAttribArray(0);
+
+    // Setting up buffer for indecies
+    let mut index: u32 = 0;
+    gl::GenBuffers(1, &mut index as *mut u32);
+    gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, index);
+    gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, byte_size_of_array(&arr_indecies), pointer_to_array(&arr_indecies), gl::STATIC_DRAW);
+
+    return array;
+} 
 
 fn main() {
     // Set up the necessary objects to deal with windows and event handling
@@ -94,7 +118,9 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-
+            let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+            let indecies: Vec<u32> = vec![1, 2, 0];
+            let triangle = set_up_vao(&vertices, &indecies);
         }
 
         // Basic usage of shader helper:
@@ -152,7 +178,7 @@ fn main() {
                 // Issue the necessary commands to draw your scene here
 
 
-
+                gl::DrawElements(gl::TRIANGLES, 100, gl::UNSIGNED_INT, ptr::null());
 
 
             }
