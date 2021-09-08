@@ -119,21 +119,47 @@ fn main() {
         // == // Set up your VAO here
         unsafe {
             // Setting up a test VAO for one triangle
-            let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-            let indecies: Vec<u32> = vec![1, 2, 0];
-            set_up_vao(&vertices, &indecies);
+            // let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+            // let indecies: Vec<u32> = vec![1, 2, 0];
+            // let triangle = set_up_vao(&vertices, &indecies);
+
+            // Task 1: 5 (+1) distinct triangles
+            let vertices: Vec<f32> = vec![
+                0.75, -0.5, 0.0, 0.5, 0.0, 0.0, 0.25, -0.5, 0.0,    // Leftmost triangle bottom row
+                0.5, 0.0, 0.0, 0.25, 0.5, 0.0, 0.0, 0.0, 0.0,       // Leftmost triangle middle row
+                0.25, 0.5, 0.0, 0.0, 1.0, 0.0, -0.25, 0.5, 0.0,     // Upper row triangle
+                0.25, -0.5, 0.0, 0.0, 0.0, 0.0, -0.25, -0.5, 0.0,   // Middle triangle bottom row
+                0.0, 0.0, 0.0, -0.25, 0.5, 0.0, -0.5, 0.0, 0.0,     // Rightmost triangle middle row
+                -0.25, -0.5, 0.0, -0.5, 0.0, 0.0, -0.75, -0.5, 0.0  // Rightmost triangle bottom row
+            ];
+
+            // Indeces for connecting the vertices correctly together
+            let indeces: Vec<u32> = vec![
+                1, 2, 0,
+                4, 5, 3,
+                7, 8, 6,
+                10, 11, 9,
+                13, 14, 12,
+                16, 17, 15
+            ];
+            
+            // Supplying the data to the VAO
+            set_up_vao(&vertices, &indeces);
         }
 
-        // Basic usage of shader helper:
-        // The example code below returns a shader object, which contains the field `.program_id`.
-        // The snippet is not enough to do the assignment, and will need to be modified (outside of
-        // just using the correct path), but it only needs to be called once
-        //
-        //     shader::ShaderBuilder::new()
-        //        .attach_file("./path/to/shader.file")
-        //        .link();
         unsafe {
+            // TODO: fix the pathing, so that it's a relative path instead of an absolute one.
+            // Setting up and activating the vertex shader
+            /* let sh_vertex = */ shader::ShaderBuilder::new()
+                .attach_file("/home/bigdikdinko/Documents/NTNU/CG/gloom-rs/shaders/simple.vert")
+                .link()
+                .activate();
 
+            // Setting up and activating the fragment shader
+            /* let sh_fragment = */ shader::ShaderBuilder::new()
+                .attach_file("/home/bigdikdinko/Documents/NTNU/CG/gloom-rs/shaders/simple.frag")
+                .link()
+                .activate();
         }
 
         // Used to demonstrate keyboard handling -- feel free to remove
@@ -178,10 +204,8 @@ fn main() {
 
                 // Issue the necessary commands to draw your scene here
 
-
+                // Drawing the triangles
                 gl::DrawElements(gl::TRIANGLES, 100, gl::UNSIGNED_INT, ptr::null());
-
-
             }
 
             context.swap_buffers().unwrap();
