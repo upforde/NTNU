@@ -118,9 +118,10 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
+            // Setting up a test VAO for one triangle
             let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
             let indecies: Vec<u32> = vec![1, 2, 0];
-            let triangle = set_up_vao(&vertices, &indecies);
+            set_up_vao(&vertices, &indecies);
         }
 
         // Basic usage of shader helper:
