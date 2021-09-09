@@ -3,6 +3,7 @@
 *.zip
 *.o
 *.svg
+*.deb
 The-Spam-Classifinator/
 ProgLang-Scala-project/
 Reinforcement-Learning-PR-1/
