@@ -118,33 +118,36 @@ fn main() {
 
         // == // Set up your VAO here
         unsafe {
-            // Setting up a test VAO for one triangle
-            // let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
-            // let indecies: Vec<u32> = vec![1, 2, 0];
-            // let triangle = set_up_vao(&vertices, &indecies);
+            // Task 1: 5 distinct triangles
+            // let vertices: Vec<f32> = vec![
+            //     0.75, -0.5, 0.0, 0.5, 0.0, 0.0, 0.25, -0.5, 0.0,    // Leftmost triangle bottom row
+            //     0.5, 0.0, 0.0, 0.25, 0.5, 0.0, 0.0, 0.0, 0.0,       // Leftmost triangle middle row
+            //     0.25, 0.5, 0.0, 0.0, 1.0, 0.0, -0.25, 0.5, 0.0,     // Upper row triangle
+            //     0.25, -0.5, 0.0, 0.0, 0.0, 0.0, -0.25, -0.5, 0.0,   // Middle triangle bottom row
+            //     0.0, 0.0, 0.0, -0.25, 0.5, 0.0, -0.5, 0.0, 0.0,     // Rightmost triangle middle row
+            // ];
 
-            // Task 1: 5 (+1) distinct triangles
-            let vertices: Vec<f32> = vec![
-                0.75, -0.5, 0.0, 0.5, 0.0, 0.0, 0.25, -0.5, 0.0,    // Leftmost triangle bottom row
-                0.5, 0.0, 0.0, 0.25, 0.5, 0.0, 0.0, 0.0, 0.0,       // Leftmost triangle middle row
-                0.25, 0.5, 0.0, 0.0, 1.0, 0.0, -0.25, 0.5, 0.0,     // Upper row triangle
-                0.25, -0.5, 0.0, 0.0, 0.0, 0.0, -0.25, -0.5, 0.0,   // Middle triangle bottom row
-                0.0, 0.0, 0.0, -0.25, 0.5, 0.0, -0.5, 0.0, 0.0,     // Rightmost triangle middle row
-                -0.25, -0.5, 0.0, -0.5, 0.0, 0.0, -0.75, -0.5, 0.0  // Rightmost triangle bottom row
-            ];
+            // // // Indeces for connecting the vertices correctly together
+            // let indeces: Vec<u32> = vec![
+            //     1, 2, 0,
+            //     4, 5, 3,
+            //     7, 8, 6,
+            //     10, 11, 9,
+            //     13, 14, 12
+            // ];
 
-            // Indeces for connecting the vertices correctly together
-            let indeces: Vec<u32> = vec![
-                1, 2, 0,
-                4, 5, 3,
-                7, 8, 6,
-                10, 11, 9,
-                13, 14, 12,
-                16, 17, 15
-            ];
+            //Task 2: a)
+            // let vertices: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
+            // let indeces: Vec<u32> = vec![1, 2, 0];
+
+            // Task 2: b)
+            let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+            // Two sets of indices, one that's counter clockwise, and one that's clockwise
+            let indices: Vec<u32> = vec![1, 2, 0];
+            //let indices: Vec<u32> = vec![2, 1, 0];
             
             // Supplying the data to the VAO
-            set_up_vao(&vertices, &indeces);
+            set_up_vao(&vertices, &indices);
         }
 
         unsafe {
