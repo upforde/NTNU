@@ -33,3 +33,10 @@ iii) The purpose of clipping is to throw away everything that sticks out of the 
 \clearpage
 b)
 
+![Side by side comparison of what happens when the vertices are drawn in the wrong order](images/ass1task2b.png){width=9.5cm}
+
+i)
+
+ii)
+
+iii)

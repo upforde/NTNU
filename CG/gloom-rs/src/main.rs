@@ -151,16 +151,15 @@ fn main() {
         }
 
         unsafe {
-            // TODO: fix the pathing, so that it's a relative path instead of an absolute one.
             // Setting up and activating the vertex shader
             /* let sh_vertex = */ shader::ShaderBuilder::new()
-                .attach_file("/home/bigdikdinko/Documents/NTNU/CG/gloom-rs/shaders/simple.vert")
+                .attach_file("./shaders/simple.vert")
                 .link()
                 .activate();
 
             // Setting up and activating the fragment shader
             /* let sh_fragment = */ shader::ShaderBuilder::new()
-                .attach_file("/home/bigdikdinko/Documents/NTNU/CG/gloom-rs/shaders/simple.frag")
+                .attach_file("./shaders/simple.frag")
                 .link()
                 .activate();
         }
