@@ -119,31 +119,34 @@ fn main() {
         // == // Set up your VAO here
         unsafe {
             // Task 1: 5 distinct triangles
-            // let vertices: Vec<f32> = vec![
-            //     0.75, -0.5, 0.0, 0.5, 0.0, 0.0, 0.25, -0.5, 0.0,    // Leftmost triangle bottom row
-            //     0.5, 0.0, 0.0, 0.25, 0.5, 0.0, 0.0, 0.0, 0.0,       // Leftmost triangle middle row
-            //     0.25, 0.5, 0.0, 0.0, 1.0, 0.0, -0.25, 0.5, 0.0,     // Upper row triangle
-            //     0.25, -0.5, 0.0, 0.0, 0.0, 0.0, -0.25, -0.5, 0.0,   // Middle triangle bottom row
-            //     0.0, 0.0, 0.0, -0.25, 0.5, 0.0, -0.5, 0.0, 0.0,     // Rightmost triangle middle row
-            // ];
+            // The vertices and indices can be improved, as some vertices are drawn
+            // multiple times, and can be omitted. I didn't bother right now, because 
+            // writing this from imagination is allready frying my brain.
+            let vertices: Vec<f32> = vec![
+                0.75, -0.5, 0.0, 0.5, 0.0, 0.0, 0.25, -0.5, 0.0,
+                0.5, 0.0, 0.0, 0.25, 0.5, 0.0, 0.0, 0.0, 0.0,
+                0.25, 0.5, 0.0, 0.0, 1.0, 0.0, -0.25, 0.5, 0.0,
+                0.25, -0.5, 0.0, 0.0, 0.0, 0.0, -0.25, -0.5, 0.0,
+                0.0, 0.0, 0.0, -0.25, 0.5, 0.0, -0.5, 0.0, 0.0
+            ];
 
             // // // Indeces for connecting the vertices correctly together
-            // let indeces: Vec<u32> = vec![
-            //     1, 2, 0,
-            //     4, 5, 3,
-            //     7, 8, 6,
-            //     10, 11, 9,
-            //     13, 14, 12
-            // ];
+            let indices: Vec<u32> = vec![
+                1, 2, 0,
+                4, 5, 3,
+                7, 8, 6,
+                10, 11, 9,
+                13, 14, 12
+            ];
 
             //Task 2: a)
             // let vertices: Vec<f32> = vec![0.6, -0.8, -1.2, 0.0, 0.4, 0.0, -0.8, -0.2, 1.2];
             // let indeces: Vec<u32> = vec![1, 2, 0];
 
             // Task 2: b)
-            let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
+            // let vertices: Vec<f32> = vec![-0.6, -0.6, 0.0, 0.6, -0.6, 0.0, 0.0, 0.6, 0.0];
             // Two sets of indices, one that's counter clockwise, and one that's clockwise
-            let indices: Vec<u32> = vec![1, 2, 0];
+            // let indices: Vec<u32> = vec![1, 2, 0];
             //let indices: Vec<u32> = vec![2, 1, 0];
             
             // Supplying the data to the VAO
@@ -154,11 +157,6 @@ fn main() {
             // Setting up and activating the vertex shader
             /* let sh_vertex = */ shader::ShaderBuilder::new()
                 .attach_file("./shaders/simple.vert")
-                .link()
-                .activate();
-
-            // Setting up and activating the fragment shader
-            /* let sh_fragment = */ shader::ShaderBuilder::new()
                 .attach_file("./shaders/simple.frag")
                 .link()
                 .activate();
