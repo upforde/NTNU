@@ -1,4 +1,3 @@
-import sys
 from difflib import SequenceMatcher
 from random import seed, random, shuffle
 import time
