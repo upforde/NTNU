@@ -15,5 +15,5 @@ ProgLang/Assistance/
 Masters/ditto
 Masters/py_entitymatching
 DataScienceProject/
-Masters/Bert/data/
-Masters/Bert/*.csv
+Masters/BERT/data/
+Masters/BERT/*.csv
