@@ -10,6 +10,9 @@ PATH = "Data/Beer/train.txt"
 EPOCHS = 3
 
 class MatchesDataset(torch.utils.data.Dataset):
+    '''
+        Class for presenting data as a dataset implementation
+    '''
     def __init__(self, encodings):
         self.encodings = encodings
 
@@ -18,7 +21,6 @@ class MatchesDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.encodings.input_ids)
-
 
 def pair_to_string(pair):
     '''
@@ -41,6 +43,9 @@ def pair_to_string(pair):
     return string
 
 def string_to_pair(string):
+    '''
+        Takes in a string and returns it as a pair dictionary
+    '''
     pair = {}
     # Each item of the pair is split up by a \t
     parts = string.split("\t")
@@ -64,6 +69,7 @@ def string_to_pair(string):
 
     return pair
 
+# Get matches and non-matches from the dataset
 matches, non_matches = [], []
 with open(PATH) as file: 
     lines = file.readlines()
@@ -72,36 +78,37 @@ with open(PATH) as file:
         if "1" in arr[-1]: matches.append(line.strip())
         else: non_matches.append(line.strip())
 
+# Set up the BERT model
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased')
 
+# Creating the inputs tensor
 inputs = tokenizer(matches, return_tensors='pt', max_length=512, truncation=True, padding='max_length')
 
+# Creating the masked inputs
 inputs['labels'] = inputs.input_ids.detach().clone()
-
 rand = torch.rand(inputs.input_ids.shape)
-
 mask_arr = (rand < 0.15) * (inputs.input_ids != 101) * (inputs.input_ids != 0) * (inputs.input_ids != 102)
-
 selection = [torch.flatten(mask_arr[i].nonzero()).tolist() for i in range(mask_arr.shape[0])]
 
-for i in range(mask_arr.shape[0]):
-    inputs.input_ids[i, selection[i]] = 103
+# Masking selected items
+for i in range(mask_arr.shape[0]): inputs.input_ids[i, selection[i]] = 103
 
+# Creating a dataset for the model to use
 dataset = MatchesDataset(inputs)
-
 dataloader = torch.utils.data.DataLoader(dataset, shuffle=True)
 
 # Not enough GPU power :smiling_face_with_tear:
 # device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 device = torch.device('cpu')
-
 model.to(device)
 
+# Setting the model into training mode
 model.train()
 
 optim = AdamW(model.parameters(), lr=1e-5)
 
+# Training the model
 for epoch in range(EPOCHS):
     loop = tqdm(dataloader, leave=True)
     for batch in loop:
@@ -117,3 +124,5 @@ for epoch in range(EPOCHS):
 
         loop.set_description(f'Epoch {epoch}')
         loop.set_postfix(loss=loss.item())
+
+#TODO: Figure out how to get the model to predict stuff
